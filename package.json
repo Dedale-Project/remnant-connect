@@ -1,0 +1,17 @@
+{
+  "name": "remnant-public-examples",
+  "version": "0.1.0-beta.3",
+  "private": true,
+  "type": "module",
+  "description": "Public connection examples for the Remnant Remote MCP service",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "mcp:search": "node --import tsx examples/remote-mcp/index.ts",
+    "openai:dry-run": "node --import tsx examples/openai-agent-remnant/index.ts --dry-run",
+    "openai:run": "node --import tsx examples/openai-agent-remnant/index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.30.0",
+    "tsx": "4.20.5"
+  }
+}
