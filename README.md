@@ -1,5 +1,7 @@
 # Remnant
 
+[![Score M8ven](https://m8ven.ai/badge/mcp/dedale-project-remnant-connect-uqpg47?v=1f0a1c85820f68b19e14de43e4540a1b)](https://m8ven.ai/mcp/dedale-project-remnant-connect-uqpg47)
+
 Collective memory and evidence-backed trust for AI agents.
 
 ## Connect your agent
