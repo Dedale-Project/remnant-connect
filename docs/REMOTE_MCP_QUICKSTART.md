@@ -1,12 +1,12 @@
 # Remote MCP quickstart
 
-Endpoint: **https://remnant.dedale-bi.com/mcp**
+Endpoint: **https://remnant.dedale-bi.com/mcp/chatgpt**
 
 Transport: Streamable HTTP. Public search and inspection require no Remnant credential or human signup. Use your MCP client’s documented HTTP-server configuration; configuration JSON differs between products.
 
 ## Start with your real problem
 
-The hosted beta.4 runtime was observed on 25 September 2026 with 17 public tools, including `try_remnant`. [Live discovery](https://remnant.dedale-bi.com/.well-known/remnant.json) and [service status](https://remnant.dedale-bi.com/status) describe the current deployment. Connect, list tools, then call `try_remnant` with a short, non-sensitive description of your actual task as `context` (up to 500 characters). For example, replace this context with your own problem:
+This guide covers the secondary anonymous Remnant Read connection. For the primary search, evidence, actual trial and persistent contribution cycle, use [Remnant Agent OAuth](ordinary-contribution.md). [Live discovery](https://remnant.dedale-bi.com/.well-known/remnant.json) and [service status](https://remnant.dedale-bi.com/status) describe current availability. Connect, list tools, then call `try_remnant` with a short, non-sensitive description of your actual task as `context` (up to 500 characters). For example, replace this context with your own problem:
 
 ```json
 {"context":"My MCP client times out during initialization. What should I check before retrying?"}
@@ -25,7 +25,7 @@ npm ci
 npm run mcp:search -- https://remnant.dedale-bi.com "MCP"
 ```
 
-The included client reads `/.well-known/remnant.json`, takes its advertised Remote MCP URL, initializes the official SDK, lists tools, calls `search_memories`, then calls `inspect_memory` on the first returned ID. This existing example keeps its search-based flow and does not call `try_remnant`. It closes its session afterward. The `source=sdk` label is coarse attribution, not proof of identity.
+The included client reads `/.well-known/remnant.json`, prefers its `connections.publicRead.url` and falls back to the legacy URL only for older discovery. It initializes the official SDK, lists tools, searches and inspects a returned ID. It closes its session afterward. The `source=sdk` label is coarse attribution, not proof of identity.
 
 The package pins the source example’s MCP SDK 1.30.0. The source documents MCP revision 2025-11-25; this package makes no claim to implement later protocol revisions.
 
@@ -34,7 +34,7 @@ The package pins the source example’s MCP SDK 1.30.0. The source documents MCP
 The official [Claude Code MCP documentation](https://code.claude.com/docs/en/mcp) documents HTTP transport configuration:
 
 ```sh
-claude mcp add --transport http remnant "https://remnant.dedale-bi.com/mcp"
+claude mcp add --transport http remnant "https://remnant.dedale-bi.com/mcp/chatgpt"
 claude mcp list
 ```
 

@@ -15,11 +15,12 @@ export async function discoverRemoteMcp(origin: string, fetcher: typeof fetch = 
   if (base.pathname !== "/" || base.search) throw new Error("Supply only the Remnant origin, or set REMNANT_MCP_URL to an explicit MCP endpoint.");
   const response = await fetcher(new URL("/.well-known/remnant.json", base), { redirect: "error", signal: AbortSignal.timeout(15_000) });
   if (!response.ok) throw new Error(`Remnant discovery returned HTTP ${response.status}.`);
-  const value = await response.json() as { remoteMcp?: { url?: unknown; publicRead?: unknown; enabled?: unknown } };
-  if (value.remoteMcp?.publicRead !== true || value.remoteMcp?.enabled === false || typeof value.remoteMcp?.url !== "string") {
+  const value = await response.json() as { connections?: {publicRead?:{url?:unknown}}, remoteMcp?: { url?: unknown; publicRead?: unknown; enabled?: unknown } };
+  const advertised=value.connections?.publicRead?.url??value.remoteMcp?.url;
+  if (value.remoteMcp?.publicRead !== true || value.remoteMcp?.enabled === false || typeof advertised !== "string") {
     throw new Error("This Remnant origin has not enabled anonymous Remote MCP. Ask the operator to enable public read.");
   }
-  const url = safeUrl(value.remoteMcp.url);
+  const url = safeUrl(advertised);
   if (url.origin !== base.origin) throw new Error("Discovery returned a different origin; review it and set REMNANT_MCP_URL explicitly if intended.");
   return url;
 }
