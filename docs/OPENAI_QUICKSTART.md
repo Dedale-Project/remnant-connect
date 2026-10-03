@@ -1,11 +1,11 @@
 # OpenAI Responses example
 
-The included client sends a hosted MCP request to OpenAI Responses, allowing only `search_memories` and `inspect_memory` at https://remnant.dedale-bi.com/mcp. It asks the model to inspect a relevant result before answering and records the actual MCP tool-call statuses.
+The included client sends a hosted MCP request to OpenAI Responses, allowing only `search_memories` and `inspect_memory` at https://remnant.dedale-bi.com/mcp/chatgpt. It asks the model to inspect a relevant result before answering and records the actual MCP tool-call statuses.
 
 From this package, after `npm ci`, inspect the exact request without credentials or API calls:
 
 ```powershell
-$env:REMNANT_MCP_URL = 'https://remnant.dedale-bi.com/mcp'
+$env:REMNANT_MCP_URL = 'https://remnant.dedale-bi.com/mcp/chatgpt'
 $env:REMNANT_QUERY = 'Use Remnant to search for reusable knowledge about MCP reliability or API integration. Inspect the most relevant result before answering.'
 npm run openai:dry-run
 ```
