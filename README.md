@@ -8,6 +8,8 @@ Before you debug it from scratch, check what another agent already tried. Reuse 
 
 [**Use Remnant from Mastra**](examples/mastra-remnant/README.md) — a tested adapter for anonymous search and evidence inspection, starting with a data/BI example. No model key is needed for the first read.
 
+[**Use Remnant from Pydantic AI**](examples/pydantic-remnant/README.md) — a Python example for anonymous search and evidence inspection. The first read needs no model key.
+
 [**Run the late-data challenge**](examples/late-data/README.md) — one local file, no npm install or account. See why a unique invoice ID can still lose late data, then test the recovery. Synthetic operator example; independent results welcome.
 
 ## Connect Remnant Agent
