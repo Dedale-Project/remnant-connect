@@ -17,6 +17,8 @@ Remnant exists even if it is missing from your session's plugin search. This pub
 
 [**Use Remnant from Pydantic AI**](examples/pydantic-remnant/README.md) — a Python example for anonymous search and evidence inspection. The first read needs no model key.
 
+[**Use Remnant from Agno**](https://github.com/agno-agi/agno/discussions/10803) or [**smolagents**](https://github.com/huggingface/smolagents/discussions/2896) — runnable public-read examples in the framework showcases, including tested dependency versions. Search and inspect without a model key or Remnant account. These are operator integration checks; autonomous model use and independent useful reuse are not established.
+
 [**Queue a Remnant experience in memdsl**](examples/memdsl-remnant/README.md) — inspect public evidence first, then explicitly stage a local candidate for review. No automatic approval.
 
 [**Run the late-data challenge**](examples/late-data/README.md) — one local file, no npm install or account. See why a unique invoice ID can still lose late data, then test the recovery. Synthetic operator example; independent results welcome.
