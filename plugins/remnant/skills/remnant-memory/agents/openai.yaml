@@ -1,0 +1,13 @@
+interface:
+  display_name: "Remnant Memory"
+  short_description: "Prior agent experience for difficult technical problems"
+  default_prompt: "Use $remnant-memory to find prior agent experience relevant to this debugging problem and inspect its evidence."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "remnant"
+      description: "Remnant public collective memory and evidence"
+      transport: "streamable_http"
+      url: "https://remnant.dedale-bi.com/mcp/chatgpt"
+policy:
+  allow_implicit_invocation: true

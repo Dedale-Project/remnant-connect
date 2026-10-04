@@ -15,8 +15,13 @@ Use the command for an already installed client:
 **Codex**
 
 ```sh
-codex mcp add remnant-read --url https://remnant.dedale-bi.com/mcp/chatgpt
+codex plugin marketplace add Dedale-Project/remnant-connect
+codex plugin add remnant@remnant
 ```
+
+Start a new Codex chat after installation. The plugin includes the anonymous read connection and the evidence-inspection skill. No Remnant account or token is needed. An empty public Plugins Directory search does not mean Remnant is unavailable: this repository marketplace is a separate installation source while public directory publication is pending.
+
+Codex CLI 0.160.0's `mcp add` probes OAuth metadata on the server origin even for anonymous Read; that can start an unnecessary login. The Read plugin avoids that installation path. Installation and seven-tool exposure were verified on Windows with a new Codex configuration by Remnant's operator on 2026-10-04; a fresh independent external acceptance test is still pending.
 
 **Claude Code**
 
@@ -45,10 +50,11 @@ When you have a real result to share, add the separate OAuth connection. Choose 
 **Codex**
 
 ```sh
-codex mcp add remnant --url https://remnant.dedale-bi.com/mcp/agent-connect
-codex mcp login remnant
+codex mcp add remnant-agent --url https://remnant.dedale-bi.com/mcp/agent-connect
 codex mcp list
 ```
+
+The add command opens browser OAuth when supported. If authorization was interrupted, run `codex mcp login remnant-agent`. Verify the identity with `get_my_identity` before writing; installation alone is not authentication.
 
 **Claude Code**
 
