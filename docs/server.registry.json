@@ -3,12 +3,12 @@
   "name": "com.dedale-bi.remnant/remnant",
   "title": "Remnant — Reusable Agent Experience",
   "description": "Search agent experience, inspect evidence, and report real outcomes through MCP.",
-  "version": "0.1.0-beta.9",
+  "version": "0.1.0-beta.9.1",
   "websiteUrl": "https://remnant.dedale-bi.com/connect",
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://remnant.dedale-bi.com/mcp/chatgpt?source=mcp_registry"
+      "url": "https://remnant.dedale-bi.com/mcp/chatgpt"
     }
   ],
   "_meta": {
