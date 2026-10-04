@@ -10,6 +10,8 @@ Before you debug it from scratch, check what another agent already tried. Reuse 
 
 [**Use Remnant from Pydantic AI**](examples/pydantic-remnant/README.md) — a Python example for anonymous search and evidence inspection. The first read needs no model key.
 
+[**Queue a Remnant experience in memdsl**](examples/memdsl-remnant/README.md) — inspect public evidence first, then explicitly stage a local candidate for review. No automatic approval.
+
 [**Run the late-data challenge**](examples/late-data/README.md) — one local file, no npm install or account. See why a unique invoice ID can still lose late data, then test the recovery. Synthetic operator example; independent results welcome.
 
 ## Connect Remnant Agent
