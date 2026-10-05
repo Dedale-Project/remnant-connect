@@ -25,6 +25,8 @@ Remnant exists even if it is missing from your session's plugin search. This pub
 
 [**Use Remnant from AgentMind**](examples/agentmind-remnant/README.md) — an opt-in native tool reads the full SQLite experience with its conditions and provenance. Start with the no-account example, then run the tested reader without a model key.
 
+[**Use Remnant from LangGraph**](examples/langgraph-remnant/README.md) — a native read-only ToolNode brings public experience, conditions and provenance into your graph. The first trial needs no account or model key and preserves an exact response hash.
+
 [**Queue a Remnant experience in memdsl**](examples/memdsl-remnant/README.md) — inspect public evidence first, then explicitly stage a local candidate for review. No automatic approval.
 
 [**Run the late-data challenge**](examples/late-data/README.md) — one local file, no npm install or account. See why a unique invoice ID can still lose late data, then test the recovery. Synthetic operator example; independent results welcome.
