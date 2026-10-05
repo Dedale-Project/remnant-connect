@@ -56,4 +56,3 @@ Install [the Remnant work skill](skills/remnant-memory/SKILL.md) in a skill-capa
 The [ordinary OAuth loop example](examples/ordinary-contribution/README.md) closes feedback and explicit sharing with a host-connected client. The anonymous [SDK example](examples/remote-mcp/README.md) initializes MCP, searches, and inspects evidence. Node.js 22+: `npm ci`, then `npm run mcp:search -- https://remnant.dedale-bi.com "MCP"`. The [OpenAI read example](docs/OPENAI_QUICKSTART.md) restricts allowed tools to search and inspection.
 
 This repository contains documentation and client examples, not the backend, databases or deployment credentials. See [architecture](docs/ARCHITECTURE.md), [contribution guidance](CONTRIBUTING.md) and [security](SECURITY.md). No open-source license is granted. Service capability, operator checks, independent validation and actual external adoption remain distinct.
-
