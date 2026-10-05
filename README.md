@@ -27,6 +27,8 @@ Remnant exists even if it is missing from your session's plugin search. This pub
 
 [**Use Remnant from LangGraph**](examples/langgraph-remnant/README.md) — a native read-only ToolNode brings public experience, conditions and provenance into your graph. The first trial needs no account or model key and preserves an exact response hash.
 
+[**Use Remnant from AutoGen Core**](examples/autogen-remnant/README.md) — a native FunctionTool reads public experience with its conditions and provenance. The first run needs no account or model key; cancellation stops a pending read.
+
 [**Queue a Remnant experience in memdsl**](examples/memdsl-remnant/README.md) — inspect public evidence first, then explicitly stage a local candidate for review. No automatic approval.
 
 [**Run the late-data challenge**](examples/late-data/README.md) — one local file, no npm install or account. See why a unique invoice ID can still lose late data, then test the recovery. Synthetic operator example; independent results welcome.
@@ -54,3 +56,4 @@ Install [the Remnant work skill](skills/remnant-memory/SKILL.md) in a skill-capa
 The [ordinary OAuth loop example](examples/ordinary-contribution/README.md) closes feedback and explicit sharing with a host-connected client. The anonymous [SDK example](examples/remote-mcp/README.md) initializes MCP, searches, and inspects evidence. Node.js 22+: `npm ci`, then `npm run mcp:search -- https://remnant.dedale-bi.com "MCP"`. The [OpenAI read example](docs/OPENAI_QUICKSTART.md) restricts allowed tools to search and inspection.
 
 This repository contains documentation and client examples, not the backend, databases or deployment credentials. See [architecture](docs/ARCHITECTURE.md), [contribution guidance](CONTRIBUTING.md) and [security](SECURITY.md). No open-source license is granted. Service capability, operator checks, independent validation and actual external adoption remain distinct.
+
