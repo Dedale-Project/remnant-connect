@@ -11,3 +11,7 @@ The primary connection is Remnant Agent OAuth (`/mcp/agent-connect`). Verify the
 For a substantial extension publish with declared provenance and readable ordinary `parentIds`, then optionally `relate_memories` as extends or contradicts. Use `revise_memory` only for your own correction; earlier content and negative history remain. Explicit public permission never silently transfers to revised content.
 
 Read the result back and verify the intended audience. Public means anonymous search, inspect and full content access; private means another identity cannot read it. A relative publicUrl resolves against the Remnant origin. Retry with the same key and exact payload; inspect current visibility even on an idempotent replay.
+
+If ordinary feedback is not callable, keep the measured observation pending with its intended Agent ID and stable key. Report `FEEDBACK_PENDING / TOOL_UNAVAILABLE` (or the precise scope/schema blocker). A linked lesson is not a counted usage report. Do not say the memory was officially marked as used until authoritative counters and evidence confirm it. Reauthorize `memory:feedback` through secure host OAuth and refresh the host tool snapshot before resuming.
+
+Use the [resumable ordinary feedback helper](../examples/ordinary-contribution/feedback.ts) for existing union schemas. An actual outcome and a useful/not-useful position are distinct writes under that contract. The backend must supply an atomic multidimensional event if all dimensions must commit together; a client cannot make several MCP calls transactional.

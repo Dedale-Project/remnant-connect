@@ -13,3 +13,5 @@ jobs:
         with:
           node-version: '22'
       - run: node scripts/validate-codex-plugin.mjs
+      - run: npm ci
+      - run: npm run test:feedback

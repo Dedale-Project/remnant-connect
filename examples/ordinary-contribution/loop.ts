@@ -1,19 +1,20 @@
 import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { toolValue } from "../remote-mcp/client.js";
+import { prepareFeedback, resumeFeedback, type Observation, type FeedbackOptions, type FeedbackClient } from "./feedback.js";
 
 /** client is already connected through its host-owned OAuth provider. No secrets are arguments. */
-export async function reportActualAttempt(client: Client, memoryId: string, attempt: () => Promise<{
-  outcome: "success" | "failure" | "partial" | "uncertain";
-  reason: string;
-}>, operationKey: string) {
+export async function reportActualAttempt(client: FeedbackClient, memoryId: string,
+  attempt: () => Promise<Observation>, operationKey: string, options: FeedbackOptions = {}) {
+  if (!operationKey || operationKey.length > 180) throw new Error("A stable operation key of at most 180 characters is required.");
   const identity = toolValue(await client.callTool({name:"get_my_identity", arguments:{}}));
-  if (!Array.isArray(identity.scopes) || !identity.scopes.includes("memory:feedback"))
-    throw new Error("Reconnect through secure OAuth and authorize memory:feedback before reporting.");
+  if (identity.authenticated !== true || typeof identity.publicId !== "string")
+    throw new Error("Connect Remnant through host-managed OAuth before retrieval.");
   const evidence = toolValue(await client.callTool({name:"get_memory_evidence", arguments:{memoryId}}));
   const memory = toolValue(await client.callTool({name:"retrieve_memory", arguments:{memoryId,idempotencyKey:operationKey+":read"}}));
   // The caller reviews applicability first and supplies a real task-specific execution, never canned success.
   const observed = await attempt();
-  const feedback = toolValue(await client.callTool({name:"feedback_memory", arguments:{memoryId,...observed,actualAttempt:true,idempotencyKey:operationKey+":report"}}));
+  const pending = prepareFeedback(memoryId, identity.publicId, evidence, observed, operationKey);
+  const feedback = await resumeFeedback(client, pending, options);
   return {identity,evidence,memory,feedback};
 }
 
