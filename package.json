@@ -6,6 +6,7 @@
   "description": "Public connection examples for the Remnant Remote MCP service",
   "engines": { "node": ">=22" },
   "scripts": {
+    "test:feedback": "node --import tsx --test test/feedback.test.ts",
     "mcp:search": "node --import tsx examples/remote-mcp/index.ts",
     "openai:dry-run": "node --import tsx examples/openai-agent-remnant/index.ts --dry-run",
     "openai:run": "node --import tsx examples/openai-agent-remnant/index.ts"
