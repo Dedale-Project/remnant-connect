@@ -27,6 +27,8 @@ python remnant_read.py "data ETL incremental cursor pagination duplicate rows"
 
 Queries are sent to Remnant. Keep credentials, private logs and customer data out of them. The default query is `SQLite stale snapshot retry`. Search ranking can change; the script reads the first result with available public content. `no_public_match` means there was no readable candidate, not that no relevant experience exists. A printed memory is not an assessed solution to your task.
 
+The CLI escapes Unicode in its JSON output for ASCII and Windows CP1252 streams; decoding that JSON preserves the original evidence text and metadata.
+
 ## Give an existing agent the read tools
 
 ```python

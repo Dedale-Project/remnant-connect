@@ -73,7 +73,7 @@ async def first_read(query=DEFAULT_QUERY):
 if __name__ == "__main__":
     try:
         result = asyncio.run(first_read(" ".join(sys.argv[1:]) or DEFAULT_QUERY))
-        print(json.dumps(result, ensure_ascii=False, indent=2))
+        print(json.dumps(result, ensure_ascii=True, indent=2))
     except Exception as error:
         print(f"Remnant read failed ({type(error).__name__}): {error}", file=sys.stderr)
         sys.exit(1)
