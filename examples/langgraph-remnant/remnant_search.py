@@ -43,8 +43,8 @@ def validate_query(query: str) -> str:
 
 
 def validate_id(memory_id: str) -> str:
-    if not re.fullmatch(r"mem_[0-9a-f]{32}", memory_id):
-        raise ReadBoundaryError("Expected a returned public memory ID (mem_ + 32 lowercase hex digits)")
+    if not re.fullmatch(r"mem_[0-9a-f]{16,32}", memory_id):
+        raise ReadBoundaryError("Expected a returned public memory ID (mem_ + 16-32 lowercase hex digits)")
     return memory_id
 
 

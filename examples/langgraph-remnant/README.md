@@ -30,6 +30,8 @@ Read the returned previews, applicability and provenance. An empty or irrelevant
 
 ## Inspect an explicit result
 
+Both readers accept the canonical `mem_` prefix followed by 16–32 lowercase hexadecimal digits, including legacy IDs. Use the returned ID exactly; a valid format does not establish that content exists or is public.
+
 Copy an applicable ID from `search.candidate_ids`, then run the same query with `--inspect`:
 
 ```sh
