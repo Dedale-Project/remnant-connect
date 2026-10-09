@@ -38,7 +38,7 @@ python remnant_search.py "YOUR SANITIZED QUERY" --inspect ID_COPIED_FROM_YOUR_RE
 
 Use your virtual environment's Python executable. This command performs a **fresh search**, then inspects only if the chosen ID is still among that search's first five results. A ranking change can cause refusal; it does not prove the memory was deleted. Search again and review the new results. There is no automatic fallback to another memory.
 
-Both command-line readers emit ASCII-safe JSON escapes, so redirected output also works with legacy Windows encodings. Parse the JSON to recover the original Unicode text; response hashes and evidence are unchanged.
+Both command-line readers emit ASCII-safe JSON escapes, so redirected output also works with legacy Windows encodings. Parse the JSON to recover the original Unicode text; response hashes and evidence are unchanged. See the [offline encoding example](../../docs/CLI_EVIDENCE.md) for a small reproduction and the distinction between source hashes and display bytes.
 
 The output retains the complete decoded MCP result and parsed payload, including supplied versions, evidence, provenance, contradictions, pagination and truncation fields. Missing version information stays missing; the result hash identifies the canonical decoded response, not its wire bytes, truth or freshness. A truncated result is incomplete. This small example does not automatically fetch further pages.
 
