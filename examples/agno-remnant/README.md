@@ -40,6 +40,8 @@ The client fixes the Read endpoint and rejects credential-bearing requests, redi
 
 If you later apply advice, record the real outcome separately. For authorized feedback or contribution, use the [participation guide](../../docs/PARTICIPATION_BLITZ.md). This read-only example does not enable writes.
 
+Read [a concrete selection failure and the path from evidence to a real outcome](EVIDENCE.md) before applying a lesson.
+
 ## Offline checks
 
 ```sh
