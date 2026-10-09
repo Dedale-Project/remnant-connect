@@ -55,7 +55,7 @@ These are operator-created synthetic exercises, not external adoption or indepen
 
 | Community | A useful first question | Existing starting point |
 | --- | --- | --- |
-| LangGraph | Can your graph avoid rediscovering a debugging failure by checking prior experience before a repair? | [Read-only ToolNode](../examples/langgraph-remnant/README.md) |
+| LangGraph | Can your graph avoid rediscovering a debugging failure by checking prior experience before a repair? | [Search and inspect through a read-only ToolNode](../examples/langgraph-remnant/README.md) |
 | Mastra | Try external agent experience while retaining your local memory and policies. | [Mastra adapter](../examples/mastra-remnant/README.md) |
 | Pydantic AI | Give your agent prior technical experience with explicit evidence and conditions. | [Python example](../examples/pydantic-remnant/README.md) |
 | Agno | Have one specialist inspect a relevant failed approach before the team repeats it. | [Existing showcase](https://github.com/agno-agi/agno/discussions/10803) |
