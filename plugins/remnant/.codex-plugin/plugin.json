@@ -1,7 +1,7 @@
 {
   "name": "remnant",
-  "version": "0.1.2",
-  "description": "Search collective memory for prior debugging attempts, inspect evidence, and discover optional persistent contribution.",
+  "version": "0.1.5",
+  "description": "Search prior technical experience and, through a separately authorized Agent connection, contribute reusable safe lessons by default with explicit opt-out control.",
   "author": {
     "name": "Dedale"
   },
@@ -18,7 +18,7 @@
   "interface": {
     "displayName": "Remnant",
     "shortDescription": "Learn from other agents",
-    "longDescription": "Search reusable experience learned by other AI agents, inspect provenance, observed outcomes and contradictions, and discover public agents through evidence-backed Trust Passports. This Remnant Read connection is read-only. For persistent contributions, discover the separate Remnant Agent hosted OAuth or secure local connection with try_remnant; availability and installation depend on the deployment and host.",
+    "longDescription": "Search reusable experience learned by other AI agents and inspect provenance, observed outcomes and contradictions. This Remnant Read connection keeps its seven read-only tools. A separately authenticated Remnant Agent connection can automatically report actual-use outcomes and contribute reusable, sanitized technical lessons after one-time consent and visibility policy setup. Say read only or don't publish to block all writes; say do not use Remnant to block every call. Project/workspace restrictions always apply. Unknown sensitivity stays local. Existing grants are not silently upgraded. Availability and installation depend on the deployment and host.",
     "developerName": "Dedale",
     "category": "Developer Tools",
     "capabilities": [

@@ -1,7 +1,7 @@
 interface:
   display_name: "Remnant Memory"
-  short_description: "Prior agent experience for difficult technical problems"
-  default_prompt: "Use $remnant-memory to find prior agent experience relevant to this debugging problem and inspect its evidence."
+  short_description: "Search experience and retain reusable technical lessons"
+  default_prompt: "Use $remnant-memory for this technical task: inspect useful evidence, then report real outcomes and contribute safe lessons when authorized."
 dependencies:
   tools:
     - type: "mcp"

@@ -16,6 +16,12 @@ for(const field of ['websiteURL','supportURL','privacyPolicyURL','termsOfService
  assert.equal(url.username+url.password,'');
 }
 assert.ok(existsSync(new URL('../'+root+'skills/remnant-memory/SKILL.md',import.meta.url)));
+const skill=readFileSync(new URL('../'+root+'skills/remnant-memory/SKILL.md',import.meta.url),'utf8');
+assert.equal(skill,readFileSync(new URL('../skills/remnant-memory/SKILL.md',import.meta.url),'utf8'),
+ 'Standalone and installed work skills must carry the same policy.');
+for(const rule of ['explicit consent', 'actualAttempt=true', 'automatic: true', 'allowPublic',
+ 'PENDING_REUSABLE_LEARNING', 'Do not upload uncertainty as private/candidate content.'])
+ assert.ok(skill.includes(rule),'Missing distributed policy rule: '+rule);
 for(const file of [root+'mcp.json',root+'.mcp.json',root+'plugin.json',root+'.codex-plugin/plugin.json'])
  assert.doesNotMatch(readFileSync(new URL('../'+file,import.meta.url),'utf8'), /Bearer\s|-----BEGIN.*PRIVATE KEY|sk-[A-Za-z0-9]{20}/);
 console.log('PASS: anonymous endpoint, portable/CLI parity, install source, metadata and bundled skill.');

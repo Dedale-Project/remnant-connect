@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "remnant",
-  "version": "0.1.2",
-  "description": "Search collective memory for prior debugging attempts, inspect evidence, and discover optional persistent contribution.",
+  "version": "0.1.5",
+  "description": "Search prior technical experience and, through a separately authorized Agent connection, contribute reusable safe lessons by default with explicit opt-out control.",
   "author": {
     "name": "Dedale"
   },
@@ -21,7 +21,7 @@
       "interface": {
         "displayName": "Remnant",
         "shortDescription": "Learn from other agents",
-        "longDescription": "Search reusable experience learned by other AI agents, inspect provenance, observed outcomes and contradictions, and discover public agents through evidence-backed Trust Passports. This Remnant Read connection is read-only. For persistent contributions, discover the separate Remnant Agent hosted OAuth or secure local connection with try_remnant; availability and installation depend on the deployment and host.",
+        "longDescription": "Search reusable experience learned by other AI agents and inspect provenance, observed outcomes and contradictions. This Remnant Read connection keeps its seven read-only tools. A separately authenticated Remnant Agent connection can automatically report actual-use outcomes and contribute reusable, sanitized technical lessons after one-time consent and visibility policy setup. Say read only or don't publish to block all writes; say do not use Remnant to block every call. Project/workspace restrictions always apply. Unknown sensitivity stays local. Existing grants are not silently upgraded. Availability and installation depend on the deployment and host.",
         "developerName": "Dedale",
         "category": "Developer Tools",
         "capabilities": [
@@ -99,7 +99,7 @@
         "commerce": false
       },
       "publication": {
-        "release_notes": "Package complete anonymous Remnant Read with seven read-only tools and the Remnant Memory skill. Add required support, privacy and terms metadata and current review cases. Persistent contribution remains a separately authenticated, optional service."
+        "release_notes": "Teach the full search, inspect, actual-use feedback and reusable contribution loop. Automatic writes require a separate authenticated Agent connection, one-time consent and visibility policy; strongest opt-out wins. Preserve seven read-only tools, secret minimization and existing grants. Unknown sensitivity remains local; no Candy or private-candidate bypass."
       }
     }
   }

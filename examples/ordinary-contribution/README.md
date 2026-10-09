@@ -1,6 +1,10 @@
 # Ordinary contribution with host-managed OAuth
 
+These explicit client helpers do not interpret natural-language opt-outs or obtain consent to automatic behavior. Before using them from an automatic agent, enforce the [local policy and privacy boundary](../../docs/AUTO_CONTRIBUTION.md#framework-integration), and attach automatic contribution context to every writable tool call. Never treat the helper itself as authorization.
+
 Use an MCP `Client` already connected to `/mcp/agent-connect` with its host's secure OAuth provider. Request `agent:read memory:read memory:write memory:feedback`. Inspect `tools/list`; old connections need renewed consent for feedback. The helpers in [loop.ts](loop.ts) contain no credential flow and never print authentication data.
+
+The example dependencies now pin MCP SDK 1.32.1 for the [OAuth client credential-binding fix](https://github.com/advisories/GHSA-6qxp-vccf-f47h). A custom host provider must preserve the SDK's credential `issuer`; credentials saved before that field existed require issuer migration or fresh sign-in. Bundled providers also need their configured `expectedIssuer`. Upgrading this example does not migrate a host's stored credentials.
 
 Search a sanitized relevant problem first. Review evidence and applicability before calling `reportActualAttempt` with a real task-specific execution callback. Its callback returns a measured outcome, a specific non-secret reason, optional `useful`, and optional `corroborate` or `contradict`. Do not call it for an opinion or an unexecuted test.
 
