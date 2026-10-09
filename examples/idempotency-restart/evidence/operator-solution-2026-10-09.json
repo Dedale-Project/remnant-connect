@@ -1,0 +1,232 @@
+{
+  "fixture": "idempotency-restart-v1",
+  "implementation": "solution",
+  "evidence_class": "local_synthetic_operator_run",
+  "external_tester": false,
+  "cross_agent_reuse_established": false,
+  "timestamp_utc": "2026-10-09T14:46:44.726347+00:00",
+  "runtime": {
+    "python": "3.13.1",
+    "sqlite": "3.45.3",
+    "os": "Windows",
+    "release": "11"
+  },
+  "source_sha256": {
+    "common.py": "59fc04f6681ec48aa333bd09ab28673fdb2a876588bd9b5f7fe00829db8a2225",
+    "solution.py": "8e7a3fd46bba38602a940143005d67a7cd3b169c59f7118a0f731927eea6080e",
+    "starter.py": "4b8fd9254dd1cccbba3605ccc74329f939f4db4d6825c5bcb4d1b59852d53cf8",
+    "verify.py": "89586a083ebac07942b358eb8571674ca7c017b8f47b8e23343a5c4dfb18557d",
+    "worker.py": "44adf15dfc2ca67ec70289b23d2e73f5c7adae7a4e61f31b98347388c38fbd77"
+  },
+  "passed": 6,
+  "total": 6,
+  "results": [
+    {
+      "case": "lost_reply_restart",
+      "passed": true,
+      "calls": [
+        {
+          "exit": 75,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "exit": 0,
+          "stdout": "{\"responses\": [{\"effect_id\": 1, \"key\": \"synthetic-job-1\", \"tenant\": \"synthetic-a\", \"units\": 7}]}",
+          "stderr": ""
+        }
+      ],
+      "observations": {
+        "after_crash": {
+          "effects": [
+            [
+              1,
+              "synthetic-a",
+              "synthetic-job-1",
+              7
+            ]
+          ],
+          "effect_count": 1,
+          "total_units": 7,
+          "receipt_count": 1
+        },
+        "after_retry": {
+          "effects": [
+            [
+              1,
+              "synthetic-a",
+              "synthetic-job-1",
+              7
+            ]
+          ],
+          "effect_count": 1,
+          "total_units": 7,
+          "receipt_count": 1
+        }
+      }
+    },
+    {
+      "case": "interrupted_transaction",
+      "passed": true,
+      "calls": [
+        {
+          "exit": 75,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "exit": 0,
+          "stdout": "{\"responses\": [{\"effect_id\": 1, \"key\": \"synthetic-job-1\", \"tenant\": \"synthetic-a\", \"units\": 7}]}",
+          "stderr": ""
+        }
+      ],
+      "observations": {
+        "after_crash": {
+          "effects": [],
+          "effect_count": 0,
+          "total_units": 0,
+          "receipt_count": 0
+        },
+        "after_retry": {
+          "effects": [
+            [
+              1,
+              "synthetic-a",
+              "synthetic-job-1",
+              7
+            ]
+          ],
+          "effect_count": 1,
+          "total_units": 7,
+          "receipt_count": 1
+        }
+      }
+    },
+    {
+      "case": "same_request_replay",
+      "passed": true,
+      "calls": [
+        {
+          "exit": 0,
+          "stdout": "{\"responses\": [{\"effect_id\": 1, \"key\": \"synthetic-job-1\", \"tenant\": \"synthetic-a\", \"units\": 7}, {\"effect_id\": 1, \"key\": \"synthetic-job-1\", \"tenant\": \"synthetic-a\", \"units\": 7}]}",
+          "stderr": ""
+        },
+        {
+          "exit": 0,
+          "stdout": "{\"responses\": [{\"effect_id\": 1, \"key\": \"synthetic-job-1\", \"tenant\": \"synthetic-a\", \"units\": 7}]}",
+          "stderr": ""
+        }
+      ],
+      "observations": {
+        "final": {
+          "effects": [
+            [
+              1,
+              "synthetic-a",
+              "synthetic-job-1",
+              7
+            ]
+          ],
+          "effect_count": 1,
+          "total_units": 7,
+          "receipt_count": 1
+        }
+      }
+    },
+    {
+      "case": "changed_payload_conflicts",
+      "passed": true,
+      "calls": [
+        {
+          "exit": 0,
+          "stdout": "{\"responses\": [{\"effect_id\": 1, \"key\": \"synthetic-job-1\", \"tenant\": \"synthetic-a\", \"units\": 7}]}",
+          "stderr": ""
+        },
+        {
+          "exit": 2,
+          "stdout": "{\"error\": \"conflict\", \"reason\": \"key reused with different input\"}",
+          "stderr": ""
+        }
+      ],
+      "observations": {
+        "final": {
+          "effects": [
+            [
+              1,
+              "synthetic-a",
+              "synthetic-job-1",
+              7
+            ]
+          ],
+          "effect_count": 1,
+          "total_units": 7,
+          "receipt_count": 1
+        }
+      }
+    },
+    {
+      "case": "tenant_scoped_key",
+      "passed": true,
+      "calls": [
+        {
+          "exit": 0,
+          "stdout": "{\"responses\": [{\"effect_id\": 1, \"key\": \"synthetic-job-1\", \"tenant\": \"synthetic-a\", \"units\": 7}, {\"effect_id\": 2, \"key\": \"synthetic-job-1\", \"tenant\": \"synthetic-b\", \"units\": 11}, {\"effect_id\": 1, \"key\": \"synthetic-job-1\", \"tenant\": \"synthetic-a\", \"units\": 7}, {\"effect_id\": 2, \"key\": \"synthetic-job-1\", \"tenant\": \"synthetic-b\", \"units\": 11}]}",
+          "stderr": ""
+        }
+      ],
+      "observations": {
+        "final": {
+          "effects": [
+            [
+              1,
+              "synthetic-a",
+              "synthetic-job-1",
+              7
+            ],
+            [
+              2,
+              "synthetic-b",
+              "synthetic-job-1",
+              11
+            ]
+          ],
+          "effect_count": 2,
+          "total_units": 18,
+          "receipt_count": 2
+        }
+      }
+    },
+    {
+      "case": "new_key_is_new_action",
+      "passed": true,
+      "calls": [
+        {
+          "exit": 0,
+          "stdout": "{\"responses\": [{\"effect_id\": 1, \"key\": \"synthetic-job-1\", \"tenant\": \"synthetic-a\", \"units\": 7}, {\"effect_id\": 2, \"key\": \"synthetic-job-2\", \"tenant\": \"synthetic-a\", \"units\": 7}]}",
+          "stderr": ""
+        }
+      ],
+      "observations": {
+        "final": {
+          "effects": [
+            [
+              1,
+              "synthetic-a",
+              "synthetic-job-1",
+              7
+            ],
+            [
+              2,
+              "synthetic-a",
+              "synthetic-job-2",
+              7
+            ]
+          ],
+          "effect_count": 2,
+          "total_units": 14,
+          "receipt_count": 2
+        }
+      }
+    }
+  ]
+}

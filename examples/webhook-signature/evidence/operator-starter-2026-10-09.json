@@ -1,0 +1,100 @@
+{
+  "fixture": "webhook-sandbox-v1",
+  "implementation": "starter",
+  "evidence_class": "local_synthetic_operator_run",
+  "external_tester": false,
+  "cross_agent_reuse_established": false,
+  "timestamp_utc": "2026-10-09T14:48:18.205908+00:00",
+  "runtime": {
+    "python": "3.13.1",
+    "os": "Windows"
+  },
+  "source_sha256": {
+    "fixture.py": "b019ff8f707ea610201ccb88c224e0cc5bfaefddc64441ee5ba08b430e234836",
+    "solution.py": "9a10c09a10904bfe2f49caeec8238b87ee12f8f45133d8686137dd75eec7f7fb",
+    "starter.py": "3259d13715effd1dcc439f6338528875045a96f66ca1e20b8afbe9d625a63d26",
+    "verify.py": "999350ef678333584a7af3621a5777eca25021dadcc5792c6fe002f4c3f8bf27"
+  },
+  "passed": 8,
+  "total": 13,
+  "results": [
+    {
+      "case": "valid_compact",
+      "expected": true,
+      "observed": true,
+      "passed": true
+    },
+    {
+      "case": "valid_original_whitespace",
+      "expected": true,
+      "observed": false,
+      "passed": false
+    },
+    {
+      "case": "changed_bytes_same_json",
+      "expected": false,
+      "observed": true,
+      "passed": false
+    },
+    {
+      "case": "changed_semantic_payload",
+      "expected": false,
+      "observed": false,
+      "passed": true
+    },
+    {
+      "case": "stale_301_seconds",
+      "expected": false,
+      "observed": true,
+      "passed": false
+    },
+    {
+      "case": "future_31_seconds",
+      "expected": false,
+      "observed": true,
+      "passed": false
+    },
+    {
+      "case": "old_boundary_300_seconds",
+      "expected": true,
+      "observed": true,
+      "passed": true
+    },
+    {
+      "case": "future_boundary_30_seconds",
+      "expected": true,
+      "observed": true,
+      "passed": true
+    },
+    {
+      "case": "duplicate_timestamp",
+      "expected": false,
+      "observed": true,
+      "passed": false
+    },
+    {
+      "case": "malformed_digest",
+      "expected": false,
+      "observed": false,
+      "passed": true
+    },
+    {
+      "case": "timestamp_tampered",
+      "expected": false,
+      "observed": false,
+      "passed": true
+    },
+    {
+      "case": "missing_signature",
+      "expected": false,
+      "observed": false,
+      "passed": true
+    },
+    {
+      "case": "authentic_redelivery",
+      "expected": true,
+      "observed": true,
+      "passed": true
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+name: Remnant workflow test
+description: Report a real useful result or failure; sanitized details only.
+title: "[Workflow test] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        We want failures too. Do not post secrets, private logs, personal data, or vulnerability details. Security reports belong at https://github.com/Dedale-Project/remnant-connect/security/advisories/new . No monetary bounty is offered. This is a public issue.
+  - type: input
+    id: client
+    attributes:
+      label: Client and version
+      placeholder: Your agent host / framework and version
+    validations:
+      required: true
+  - type: textarea
+    id: task
+    attributes:
+      label: Sanitized real problem and test
+      description: What did you need, what did you try, and what actually happened? No project upload or raw logs needed.
+    validations:
+      required: true
+  - type: dropdown
+    id: stage
+    attributes:
+      label: Last step reached
+      options:
+        - Connection blocked
+        - Search
+        - Evidence inspected
+        - Actual attempt
+        - Feedback saved and checked
+        - Contribution saved and checked
+        - Another agent's memory reused in an actual task
+    validations:
+      required: true
+  - type: dropdown
+    id: outcome
+    attributes:
+      label: Actual outcome
+      options:
+        - No actual attempt yet
+        - Success
+        - Failure
+        - Partial
+        - Uncertain
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence and usefulness (optional)
+      description: Public memory URL/version, expected vs observed behavior, what changed in your approach, relevant conditions or contradiction. A successful call alone is not useful reuse.
+  - type: input
+    id: source
+    attributes:
+      label: How did you find this test? (optional)
+      placeholder: Framework example, directory, public post, or other source
+  - type: checkboxes
+    id: preferences
+    attributes:
+      label: Optional early-tester preferences
+      options:
+        - label: One relevant public follow-up in this issue is welcome if my blocker is fixed or a related result is available.
+        - label: Public contributor acknowledgement is welcome if this is a confirmed new workflow bug.

@@ -1,0 +1,24 @@
+name: Offline challenge references
+on:
+  push:
+    paths:
+      - 'examples/idempotency-restart/**'
+      - 'examples/webhook-signature/**'
+      - '.github/workflows/challenges.yml'
+  pull_request:
+    paths:
+      - 'examples/idempotency-restart/**'
+      - 'examples/webhook-signature/**'
+      - '.github/workflows/challenges.yml'
+permissions:
+  contents: read
+jobs:
+  references:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python examples/idempotency-restart/verify.py --implementation solution
+      - run: python examples/webhook-signature/verify.py --implementation solution
