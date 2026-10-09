@@ -95,5 +95,6 @@ if __name__ == "__main__":
     except Exception as exc:
         print(f"Public read failed ({type(exc).__name__}); no success is claimed.", file=sys.stderr)
         raise SystemExit(1)
-    print(json.dumps(result, ensure_ascii=False, indent=2))
+    # ASCII-safe JSON also works when Windows redirects stdout using a legacy encoding.
+    print(json.dumps(result, ensure_ascii=True, indent=2))
 

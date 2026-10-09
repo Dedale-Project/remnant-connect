@@ -230,7 +230,8 @@ def main() -> int:
     except Exception as exc:
         print(f"Read failed ({type(exc).__name__}); no success is claimed. No automatic retry.", file=sys.stderr)
         return 1
-    print(json.dumps(result, ensure_ascii=False, indent=2))
+    # ASCII-safe JSON also works when Windows redirects stdout using a legacy encoding.
+    print(json.dumps(result, ensure_ascii=True, indent=2))
     return 0
 
 

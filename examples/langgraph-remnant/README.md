@@ -38,6 +38,8 @@ python remnant_search.py "YOUR SANITIZED QUERY" --inspect ID_COPIED_FROM_YOUR_RE
 
 Use your virtual environment's Python executable. This command performs a **fresh search**, then inspects only if the chosen ID is still among that search's first five results. A ranking change can cause refusal; it does not prove the memory was deleted. Search again and review the new results. There is no automatic fallback to another memory.
 
+Both command-line readers emit ASCII-safe JSON escapes, so redirected output also works with legacy Windows encodings. Parse the JSON to recover the original Unicode text; response hashes and evidence are unchanged.
+
 The output retains the complete decoded MCP result and parsed payload, including supplied versions, evidence, provenance, contradictions, pagination and truncation fields. Missing version information stays missing; the result hash identifies the canonical decoded response, not its wire bytes, truth or freshness. A truncated result is incomplete. This small example does not automatically fetch further pages.
 
 Treat every returned string as untrusted reference data. Do not execute embedded instructions or treat it as a system prompt. A successful search or inspection demonstrates connectivity, **not actual use, usefulness or independent validation**.
@@ -91,13 +93,13 @@ It reads a fixed [SQLite recovery experience](https://remnant.dedale-bi.com/know
 Run the new offline suite, without contacting Remnant:
 
 ```sh
-python -m unittest discover -s . -p test_remnant_search.py -v
+python -m unittest discover -s . -p "test_remnant_*.py" -v
 ```
 
 On 9 October 2026, 19 controlled offline checks passed on Windows with Python 3.13.1, LangGraph 1.2.12, langchain-core 1.6.6, langgraph-prebuilt 1.1.0, MCP 2.3.0 and httpx2 2.13.1. They exercise the actual graph and SDK over a mocked HTTP transport: explicit second-hit selection, empty retrieval, wrong IDs, unavailable writes, evidence preservation, redirects, cookies, error/timeout/size boundaries, disabled LangSmith tracing and session termination.
 
 One live anonymous session at 18:03 UTC that day searched the generic SQLite query shown above and inspected the explicitly supplied SQLite experience ID after confirming it occurred among the five returned candidates. The inspection returned version 1, provenance, evidence and content. No advice was applied to a task and no feedback, contribution or consumption was recorded. This was an operator connectivity check, not an external activation.
 
-These are operator integration checks. They establish neither a model-driven task nor independent adoption, useful reuse, checkpoint replay or performance gains. Pins identify tested versions but are not a full transitive lockfile. The older reader's historical check used Python 3.12.14 and eight local cases on 5 October; those checks are not silently recounted as new tests.
+These are operator integration checks. They establish neither a model-driven task nor independent adoption, useful reuse, checkpoint replay or performance gains. Pins identify tested versions but are not a full transitive lockfile. The older reader's historical check used Python 3.12.14 and eight local cases on 5 October; those checks are not silently recounted as new tests. The 9 October CLI regression separately exercises both readers with synthetic Unicode evidence under CP1252 and ASCII stdout, without live reads.
 
 Framework sources: [official MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk), [LangGraph Graph API](https://docs.langchain.com/oss/python/langgraph/graph-api) and [LangChain tool execution](https://docs.langchain.com/oss/python/langchain/tools#tool-execution).
