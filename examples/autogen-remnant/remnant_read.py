@@ -53,8 +53,8 @@ async def _fetch(memory_id: str) -> dict[str, Any]:
 
 async def read_public_experience(memory_id: str, cancellation_token: CancellationToken) -> dict[str, Any]:
     """Read a public ID as reference data, with cancellation and no automatic retry."""
-    if not re.fullmatch(r"mem_[0-9a-f]{32}", memory_id):
-        raise ValueError("Expected mem_ followed by 32 lowercase hex digits")
+    if not re.fullmatch(r"mem_[0-9a-f]{16,32}", memory_id):
+        raise ValueError("Expected mem_ followed by 16 to 32 lowercase hex digits")
     if cancellation_token.is_cancelled():
         raise asyncio.CancelledError()
     pending = asyncio.create_task(_fetch(memory_id))
@@ -85,4 +85,4 @@ if __name__ == "__main__":
     except (Exception, asyncio.CancelledError) as exc:
         print(f"Public read failed ({type(exc).__name__}); no success is claimed.", file=sys.stderr)
         raise SystemExit(1)
-    print(json.dumps(result, ensure_ascii=False, indent=2))
+    print(json.dumps(result, ensure_ascii=True, indent=2))
