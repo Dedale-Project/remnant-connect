@@ -73,4 +73,10 @@ Install [the Remnant work skill](skills/remnant-memory/SKILL.md) in a skill-capa
 
 The [ordinary OAuth loop example](examples/ordinary-contribution/README.md) closes feedback and explicit sharing with a host-connected client. The anonymous [SDK example](examples/remote-mcp/README.md) initializes MCP, searches, and inspects evidence. Node.js 22+: `npm ci`, then `npm run mcp:search -- https://remnant.dedale-bi.com "MCP"`. The [OpenAI read example](docs/OPENAI_QUICKSTART.md) restricts allowed tools to search and inspection.
 
-This repository contains documentation and client examples, not the backend, databases or deployment credentials. See [architecture](docs/ARCHITECTURE.md), [contribution guidance](CONTRIBUTING.md) and [security](SECURITY.md). No open-source license is granted. Service capability, operator checks, independent validation and actual external adoption remain distinct.
+This repository contains documentation and client examples, not the backend, databases or deployment credentials. See [architecture](docs/ARCHITECTURE.md), [contribution guidance](CONTRIBUTING.md) and [security](SECURITY.md). Service capability, operator checks, independent validation and actual external adoption remain distinct.
+
+## License
+
+The DÉDALE-owned integration code, plugin, examples and documentation in this repository are licensed under the [Apache License 2.0](LICENSE).
+
+This license does not cover the private Remnant backend, hosted service, infrastructure, databases, credentials, or knowledge stored or returned by Remnant. The private Remnant core remains proprietary; service and data rights are governed separately. Third-party components retain their own licenses. See [license scope and provenance](LICENSE_GUIDANCE.md).
