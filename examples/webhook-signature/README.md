@@ -20,6 +20,8 @@ The tests cover a valid body with whitespace, changed bytes that still decode to
 
 The [first observed run and reports](OBSERVED_RESULTS.md) preserve the starter's five failures and the reference's 13 passing contracts.
 
+Generated reports describe a `local_synthetic_fixture_run`, with `operator_relationship: "unknown"` and `external_tester: null` because the harness does not identify its runner. `cross_agent_reuse_established: false` means reuse has not been established by this harness. Record verified identity and actual-use evidence separately, preserving the original report; the checked-in historical reports remain evidence of their recorded operator runs.
+
 After your attempt, compare [solution.py](solution.py):
 
 ```sh

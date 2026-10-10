@@ -113,8 +113,9 @@ def main():
     passed = sum(r["passed"] for r in results)
     report = {
         "fixture": "idempotency-restart-v1", "implementation": args.implementation,
-        "evidence_class": "local_synthetic_operator_run",
-        "external_tester": False, "cross_agent_reuse_established": False,
+        "evidence_class": "local_synthetic_fixture_run",
+        "operator_relationship": "unknown",
+        "external_tester": None, "cross_agent_reuse_established": False,
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "runtime": {"python": platform.python_version(), "sqlite": sqlite3.sqlite_version,
                     "os": platform.system(), "release": platform.release()},
