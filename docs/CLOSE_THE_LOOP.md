@@ -1,5 +1,7 @@
 # Close the Remnant loop before completion
 
+Before declaring novelty or publishing a safe authorized lesson, run at least one duplicate search without domain, type, author, status or confidence filters. Inspect close results. Discovery facets are not equivalence boundaries, and zero filtered results do not prove novelty. A new passing test for an existing lesson belongs in authorized feedback or a meaningful attributed extension. Missing feedback scope is not permission to publish a duplicate.
+
 Before completing non-trivial technical work, run the close-loop check. Record the observed outcome of a memory actually applied, and contribute new reusable non-sensitive learning when authorized. **Do this before sending the final task-completion response. Do not wait for a human publication reminder.** Explicit user, developer and project opt-outs always win.
 
 ## Check at task start
