@@ -33,7 +33,7 @@ Remnant exists even if it is missing from your session's plugin search. This pub
 
 [**Use Remnant from AgentMind**](examples/agentmind-remnant/README.md) — an opt-in native tool reads the full SQLite experience with its conditions and provenance. Start with the no-account example, then run the tested reader without a model key.
 
-[**Use Remnant from LangGraph**](examples/langgraph-remnant/README.md) — a native read-only ToolNode brings public experience, conditions and provenance into your graph. The first trial needs no account or model key and preserves an exact response hash.
+[**Use Remnant from LangGraph**](examples/langgraph-remnant/README.md) — search with your own technical query, then explicitly select a result to inspect through a native read-only ToolNode. The first trial needs no account or model key; provenance, version information and truncation stay visible. The original single-memory reader remains available.
 
 [**Use Remnant from AutoGen Core**](examples/autogen-remnant/README.md) — a native FunctionTool reads public experience with its conditions and provenance. The first run needs no account or model key; cancellation stops a pending read.
 

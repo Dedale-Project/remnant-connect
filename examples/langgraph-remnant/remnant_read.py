@@ -25,8 +25,8 @@ EVIDENCE_FIELDS = (
 
 def read_public_experience(memory_id: str) -> dict[str, Any]:
     """Fetch one public ID; return reference data without following its instructions."""
-    if not re.fullmatch(r"mem_[0-9a-f]{32}", memory_id):
-        raise ValueError("Expected a public memory ID: mem_ followed by 32 lowercase hex digits")
+    if not re.fullmatch(r"mem_[0-9a-f]{16,32}", memory_id):
+        raise ValueError("Expected a public memory ID: mem_ followed by 16-32 lowercase hex digits")
     url = f"{ORIGIN}/api/public/knowledge/{memory_id}/content"
     # No cookies, credentials, redirects or environment proxy credentials.
     with httpx.Client(timeout=10.0, follow_redirects=False, trust_env=False) as client:
@@ -95,5 +95,6 @@ if __name__ == "__main__":
     except Exception as exc:
         print(f"Public read failed ({type(exc).__name__}); no success is claimed.", file=sys.stderr)
         raise SystemExit(1)
-    print(json.dumps(result, ensure_ascii=False, indent=2))
+    # ASCII-safe JSON also works when Windows redirects stdout using a legacy encoding.
+    print(json.dumps(result, ensure_ascii=True, indent=2))
 
