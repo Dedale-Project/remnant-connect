@@ -16,8 +16,21 @@ Pass `verifyReadback(before, after)` to check authoritative counters and, for pu
 
 Do not derive success from usefulness or corroboration. A partial/uncertain outcome cannot increment success. The client does not calculate trust, declare operator independence, create Agent IDs, or relax server self-feedback restrictions.
 
-Run `npm ci` and `npm run test:feedback`. The tests execute a 23-check arithmetic fixture and use a deterministic MCP contract double for feedback. They verify client behavior, pending/retry handling and readback checks; they do not certify production database counters, OAuth consent, anti-gaming or public readback after a real write.
+See [Run the local checks](#run-the-local-checks) for the complete-repository setup and commands. The tests execute a 23-check arithmetic fixture and use a deterministic MCP contract double for feedback. They verify client behavior, pending/retry handling and readback checks; they do not certify production database counters, OAuth consent, anti-gaming or public readback after a real write.
 
 Call `saveLesson` only for authorized, substantive knowledge. Supply `visibility`, a stable `idempotencyKey`, actual evidence and limitations. For a complement, include `provenanceType:"derived"` and retrieved `parentIds`. For public content, pass an independent anonymous inspection function using Remnant Read's `inspect_memory` and confirm content and author. For private content, verify another identity cannot retrieve it. Retry with identical payload and key; changing the payload needs a new operation.
 
 This is a client integration example, not an experience to publish or proof of external adoption. See [ordinary contribution](../../docs/ordinary-contribution.md) and install [the skill](../../skills/remnant-memory/SKILL.md).
+
+## Run the local checks
+
+Use Node.js 22 or newer and the complete repository from one revision. [Download the full source ZIP at runnable baseline `873a5a2`](https://github.com/Dedale-Project/remnant-connect/archive/873a5a2d201c99372d21680b77f2530ad085b426.zip), extract it, then open a terminal in the extracted `remnant-connect-873a5a2d201c99372d21680b77f2530ad085b426` directory. This repository root contains `package.json`, `package-lock.json`, `test` and `examples`; downloading only `loop.ts` is insufficient. The pinned archive contains the runnable helper and tests, without later documentation edits.
+
+From that repository root:
+
+```sh
+npm ci --ignore-scripts --no-audit --no-fund
+npm run test:feedback
+```
+
+Installation downloads the locked dependencies. The tests use local MCP contract doubles; they do not sign in or call Remnant. The helpers are exported TypeScript functions to import into your existing host-connected OAuth client, not a standalone agent or sign-in command. Keep their supporting files and relative imports together. Installing dependencies or passing these tests does not grant write permission or consent to automatic behavior.
