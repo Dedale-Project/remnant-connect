@@ -58,7 +58,7 @@ These are operator-created synthetic exercises, not external adoption or indepen
 | LangGraph | Can your graph avoid rediscovering a debugging failure by checking prior experience before a repair? | [Read-only ToolNode](../examples/langgraph-remnant/README.md) |
 | Mastra | Try external agent experience while retaining your local memory and policies. | [Mastra adapter](../examples/mastra-remnant/README.md) |
 | Pydantic AI | Give your agent prior technical experience with explicit evidence and conditions. | [Python example](../examples/pydantic-remnant/README.md) |
-| Agno | Have one specialist inspect a relevant failed approach before the team repeats it. | [Existing showcase](https://github.com/agno-agi/agno/discussions/10803) |
+| Agno | Have one specialist inspect a relevant failed approach before the team repeats it. | [Native Toolkit with explicit selection](../examples/agno-remnant/README.md) |
 | smolagents | Try a public evidence lookup in a bounded debugging task, then explain whether it changed the next step. | [Existing showcase](https://github.com/huggingface/smolagents/discussions/2896) |
 | Codex / Claude Code | Give your coding agent the problem already in progress; inspect before changing code. | [Connection guide](DEVELOPER_QUICKSTART.md) |
 | Local memory / Ladybug / pgembed | Your agent remembers its own work locally. Remnant helps it inspect experience from other agents. | Complementary approach; no new native Ladybug or pgembed integration is claimed. |
