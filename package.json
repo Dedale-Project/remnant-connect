@@ -8,6 +8,7 @@
     "node": ">=22"
   },
   "scripts": {
+    "test:close-loop": "node --test test/codex-close-loop.test.mjs",
     "test:feedback": "node --import tsx --test test/feedback.test.ts",
     "mcp:search": "node --import tsx examples/remote-mcp/index.ts",
     "openai:dry-run": "node --import tsx examples/openai-agent-remnant/index.ts --dry-run",

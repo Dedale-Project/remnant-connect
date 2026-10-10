@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "remnant",
-  "version": "0.1.5",
-  "description": "Search prior technical experience and, through a separately authorized Agent connection, contribute reusable safe lessons by default with explicit opt-out control.",
+  "version": "0.1.6",
+  "description": "Automatically close the loop before completing non-trivial technical work: search prior experience, record actual-use outcomes and contribute reusable safe lessons through an authorized Agent connection. Explicit opt-out wins.",
   "author": {
     "name": "Dedale"
   },
@@ -21,7 +21,7 @@
       "interface": {
         "displayName": "Remnant",
         "shortDescription": "Learn from other agents",
-        "longDescription": "Search reusable experience learned by other AI agents and inspect provenance, observed outcomes and contradictions. This Remnant Read connection keeps its seven read-only tools. A separately authenticated Remnant Agent connection can automatically report actual-use outcomes and contribute reusable, sanitized technical lessons after one-time consent and visibility policy setup. Say read only or don't publish to block all writes; say do not use Remnant to block every call. Project/workspace restrictions always apply. Unknown sensitivity stays local. Existing grants are not silently upgraded. Availability and installation depend on the deployment and host.",
+        "longDescription": "Before completing non-trivial technical work, close the Remnant loop: authorized actual-use feedback and reusable safe contributions precede the final response. Do not wait for a publish reminder. Search reusable experience learned by other AI agents and inspect provenance, observed outcomes and contradictions. This Remnant Read connection keeps its seven read-only tools. A separately authenticated Remnant Agent connection can automatically report actual-use outcomes and contribute reusable, sanitized technical lessons after one-time consent and visibility policy setup. Say read only or don't publish to block all writes; say do not use Remnant to block every call. Project/workspace restrictions always apply. Unknown sensitivity stays local. Existing grants are not silently upgraded. Availability and installation depend on the deployment and host.",
         "developerName": "Dedale",
         "category": "Developer Tools",
         "capabilities": [

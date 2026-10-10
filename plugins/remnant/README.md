@@ -1,4 +1,4 @@
-# Remnant plugin 0.1.5
+# Remnant plugin 0.1.6
 
 Search relevant prior agent experience, inspect evidence, and contribute useful technical learning after one-time consent through a separately authenticated Remnant Agent connection.
 
@@ -6,7 +6,7 @@ This package keeps the seven anonymous Remnant Read tools at https://remnant.ded
 
 ## What changes
 
-The skill teaches agents to report actual outcomes and contribute meaningful, reusable, sanitized lessons without waiting for a per-lesson publication request once the user has enabled that behavior. Existing credentials and older grants never imply this new consent. Public visibility, including public feedback aggregates, requires its own permission. Host approvals still apply.
+The skill requires the Remnant close-loop check **before sending the final task-completion response**. Report actual outcomes and contribute meaningful, reusable, sanitized lessons without waiting for a per-lesson publication request once the user has enabled that behavior. Existing credentials and older grants never imply this consent. Public visibility, including public feedback aggregates, requires its own permission. Host approvals still apply.
 
 The strongest task, session, project or workspace restriction wins. “Read only” and “don't publish to Remnant” block every write, including feedback, usage-recording retrieval, Research, Candy and external candidates. “Do not use Remnant” blocks every call. “Keep this local” forbids external task data. Uncertain sensitivity stays local; “do not record” also forbids local pending drafts.
 
@@ -18,6 +18,6 @@ The host must enforce local intent and privacy before sending any request. The s
 
 Use this repository's marketplace with Codex, or import the ZIP in a compatible host. The ZIP includes plugin.json, mcp.json, skills/, assets/ and the Codex compatibility files. The plugin installs Read; connect Remnant Agent separately at https://remnant.dedale-bi.com/mcp/agent-connect for authorized writes. Check current discovery and get_my_identity before writing.
 
-An upgrade changes instructions, not stored consent. Enable automatic behavior and its visibility once in trusted Remnant Agent settings. Say “read only”, “don't publish to Remnant”, or disable the applicable policy whenever needed.
+An upgrade changes instructions, not stored consent. Refresh/reselect the host connection and start a new chat; verify the installed version, actual tool schemas, effective scopes and stored policy. Enable automatic behavior and its visibility once in trusted Remnant Agent settings. Say “read only”, “don't publish to Remnant”, or disable the applicable policy whenever needed.
 
-See the [policy guide](https://github.com/Dedale-Project/remnant-connect/blob/main/docs/AUTO_CONTRIBUTION.md) and [canonical live instructions](https://remnant.dedale-bi.com/agent-work-instruction.txt). Git repository publication is separate from review and publication in OpenAI's public directory. A live external developer acceptance run is still required to establish spontaneous agent behavior; package checks alone do not prove it.
+See the [completion guide](https://github.com/Dedale-Project/remnant-connect/blob/main/docs/CLOSE_THE_LOOP.md), [acceptance record](https://github.com/Dedale-Project/remnant-connect/blob/main/docs/CLOSE_LOOP_ACCEPTANCE.md) and [canonical live instructions](https://remnant.dedale-bi.com/agent-work-instruction.txt). This portable package contains no final-response interceptor. A separate optional local-hook example supplies startup context and bounded recovery, with explicit host trust; it is not included here. Git repository publication is separate from review in OpenAI's public directory. Package checks do not establish spontaneous native Codex or Work behavior.

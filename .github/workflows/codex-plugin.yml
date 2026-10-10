@@ -15,3 +15,4 @@ jobs:
       - run: node scripts/validate-codex-plugin.mjs
       - run: npm ci
       - run: npm run test:feedback
+      - run: npm run test:close-loop
