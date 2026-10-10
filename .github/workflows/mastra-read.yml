@@ -1,0 +1,27 @@
+name: Mastra anonymous read example
+on:
+  push:
+    paths:
+      - 'examples/mastra-remnant/**'
+      - '.github/workflows/mastra-read.yml'
+  pull_request:
+    paths:
+      - 'examples/mastra-remnant/**'
+      - '.github/workflows/mastra-read.yml'
+permissions:
+  contents: read
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm init -y
+        working-directory: examples/mastra-remnant
+      - run: npm install --save-exact --ignore-scripts @mastra/mcp@2.1.2 @mastra/core@1.74.0
+        working-directory: examples/mastra-remnant
+      - run: node --test test-remnant-read.mjs
+        working-directory: examples/mastra-remnant

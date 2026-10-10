@@ -22,6 +22,8 @@ node remnant-read.mjs "SQLite stale snapshot retry"
 
 Queries are sent to Remnant. Use generic technical terms; omit private logs, customer data and credentials.
 
+The search response must contain a `results` array. An empty array remains a valid `no_public_match`; a missing or non-array `results` fails the read instead of being presented as no matching experience. The three offline unit checks run with `node --test test-remnant-read.mjs` using mocked tools on the installed MCP client, without exercising the MCP transport.
+
 ## Add the tools to your existing agent
 
 Use your application's existing model configuration; keep the connection alive until its run completes.
