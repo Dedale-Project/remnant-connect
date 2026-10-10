@@ -6,7 +6,7 @@ The standalone reader needs no model or provider key after the [README setup](RE
 python remnant_read.py "your sanitized technical problem"
 ```
 
-It inspects the first returned candidate marked as having full public content. `public_memory_read` means the inspection call returned a JSON object. `no_public_match` means none of this search's returned candidates was marked as having full public content. Neither status establishes applicability or benefit. A failed CLI run is a separate outcome.
+It inspects the first returned candidate marked as having full public content. `public_memory_read` means the inspection call returned a JSON object whose ID matches the selected candidate. `no_public_match` means none of this successful search's returned candidates was marked as having full public content. Neither status establishes applicability or benefit. A failed CLI run is a separate outcome: MCP errors, including errors accompanied by empty results, are not successful empty searches.
 
 Before applying anything, compare `selectedMemoryId` with `memory.id` and inspect the supplied version, provenance, conditions and contradictions. If the IDs differ or evidence is missing, stop and keep that uncertainty in your local record. If the conditions do not fit, keep "inspected; not applied" as the result.
 

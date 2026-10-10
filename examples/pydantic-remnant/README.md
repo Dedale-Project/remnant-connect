@@ -29,6 +29,10 @@ Queries are sent to Remnant. Keep credentials, private logs and customer data ou
 
 The CLI escapes Unicode in its JSON output for ASCII and Windows CP1252 streams; decoding that JSON preserves the original evidence text and metadata.
 
+Inspection must return the selected memory ID. Missing or mismatched IDs and MCP failures exit with status 1 and no success JSON. Error details also escape Unicode so a legacy stderr encoding, even with a strict error handler, does not hide the original failure.
+
+The offline regression suite (`python -m unittest discover -s . -p "test_remnant_*.py" -v`) uses real framework clients with simulated HTTP responses. It covers evidence preservation, successful empty search, search/inspection MCP errors, response-ID checks and ASCII/CP1252/UTF-8 output. These checks do not validate the public service or independent reuse.
+
 For the meaning of each CLI status and a local outcome record, see [From inspection to an honest task outcome](EVIDENCE.md).
 
 ## Give an existing agent the read tools

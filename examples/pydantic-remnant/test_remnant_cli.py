@@ -15,6 +15,9 @@ MEMORY = {
     "version": 3,
     "content": {"insight": "Synthetic retry \u2192 inspect \u6f22\u5b57 \U0001f9ea"},
     "provenance": {"selfReported": True},
+    "sourceUrls": ["https://example.invalid/synthetic-evidence"],
+    "conditions": ["Synthetic fixture only"],
+    "contradictions": ["No independent reuse established"],
 }
 OBSERVATION_PREFIX = "CLI_TEST_OBSERVATIONS="
 
@@ -25,6 +28,10 @@ import runpy
 import site
 import socket
 import sys
+
+# Exercise applications that configure strict stderr instead of Python's
+# default backslashreplace handler.
+sys.stderr.reconfigure(errors="strict")
 
 # Support an existing --target dependency directory as well as a virtualenv.
 for dependency_path in os.environ.get("PYTHONPATH", "").split(os.pathsep):
@@ -55,6 +62,7 @@ pydantic_ai.models.ALLOW_MODEL_REQUESTS = False
 source, query, fixture_json = sys.argv[1:]
 memory = json.loads(fixture_json)
 memory_id = memory["id"]
+scenario = os.environ.get("REMNANT_TEST_SCENARIO", "success")
 
 def handler(request):
     assert str(request.url) == "https://remnant.dedale-bi.com/mcp/chatgpt"
@@ -94,13 +102,23 @@ def handler(request):
         if name == "search_memories":
             assert arguments == {"query": query, "limit": 3}
             payload = {"results": [{"id": memory_id, "contentAccess": {"fullContentAvailable": True}}]}
+            if scenario == "empty":
+                payload = {"results": []}
         elif name == "inspect_memory":
             assert arguments == {"memoryId": memory_id, "detail": "evidence"}
             payload = memory
+            if scenario == "mismatch":
+                payload = dict(memory, id="mem_" + "b" * 32)
+            elif scenario == "missing_id":
+                payload = {"error": "Synthetic missing evidence"}
         else:
             raise AssertionError("Unexpected tool: " + name)
         result = {"content": [{"type": "text", "text": json.dumps(payload)}],
                   "structuredContent": payload, "isError": False}
+        if (scenario == "search_error" and name == "search_memories") or (scenario == "inspect_error" and name == "inspect_memory"):
+            # Success-shaped structured data must not override MCP error status.
+            result = {"content": [{"type": "text", "text": "Synthetic failure \u2192 \u6f22\u5b57 \U0001f9ea"}],
+                      "structuredContent": {"results": []}, "isError": True}
     else:
         raise AssertionError("Unexpected RPC: " + method)
     return httpx2.Response(200, json={"jsonrpc": "2.0", "id": rpc["id"], "result": result})
@@ -118,10 +136,10 @@ finally:
 '''
 
 
-def invoke_cli(encoding):
+def invoke_cli(encoding, scenario="success"):
     return subprocess.run(
         [sys.executable, "-B", "-c", CHILD, str(READER), QUERY, json.dumps(MEMORY)],
-        env=dict(os.environ, PYTHONIOENCODING=encoding, PYTHONUTF8="0", PYTHONDONTWRITEBYTECODE="1"),
+        env=dict(os.environ, PYTHONIOENCODING=encoding, PYTHONUTF8="0", PYTHONDONTWRITEBYTECODE="1", REMNANT_TEST_SCENARIO=scenario),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         timeout=30,
@@ -129,6 +147,43 @@ def invoke_cli(encoding):
 
 
 class CliEncodingTests(unittest.TestCase):
+    def test_empty_search_is_success_without_inspection(self):
+        for encoding in ("cp1252", "ascii", "utf-8"):
+            with self.subTest(encoding=encoding):
+                result = invoke_cli(encoding, "empty")
+                self.assertEqual(result.returncode, 0, result.stderr)
+                decoded = json.loads(result.stdout.decode(encoding))
+                self.assertEqual(decoded, {"status": "no_public_match", "query": QUERY, "search": {"results": []}})
+                observations = json.loads(result.stderr.decode(encoding).split(OBSERVATION_PREFIX)[1])
+                self.assertEqual(observations["externalSocketAttempts"], 0)
+                self.assertEqual(observations["calls"], [{"name": "search_memories", "arguments": {"query": QUERY, "limit": 3}}])
+
+    def test_mcp_errors_remain_technical_failures_in_all_encodings(self):
+        for scenario in ("search_error", "inspect_error"):
+            for encoding in ("cp1252", "ascii", "utf-8"):
+                with self.subTest(scenario=scenario, encoding=encoding):
+                    result = invoke_cli(encoding, scenario)
+                    self.assertEqual(result.returncode, 1)
+                    self.assertEqual(result.stdout, b"")
+                    stderr = result.stderr.decode(encoding)
+                    self.assertIn("Remnant read failed", stderr)
+                    self.assertIn("Synthetic failure", stderr)
+                    self.assertNotIn("UnicodeEncodeError", stderr)
+                    self.assertNotIn("Traceback", stderr)
+                    detail = stderr.splitlines()[0].split(": ", 1)[1]
+                    self.assertEqual(json.loads(detail), "Synthetic failure \u2192 \u6f22\u5b57 \U0001f9ea")
+                    observations = json.loads(stderr.split(OBSERVATION_PREFIX)[1])
+                    self.assertEqual(observations["externalSocketAttempts"], 0)
+                    self.assertEqual(len(observations["calls"]), 1 if scenario == "search_error" else 2)
+
+    def test_inspection_requires_the_selected_id(self):
+        for scenario in ("mismatch", "missing_id"):
+            with self.subTest(scenario=scenario):
+                result = invoke_cli("ascii", scenario)
+                self.assertEqual(result.returncode, 1)
+                self.assertEqual(result.stdout, b"")
+                self.assertIn(b"does not match", result.stderr)
+
     def test_real_mcp_cli_preserves_unicode_evidence_in_stdout_encodings(self):
         for encoding in ("cp1252", "ascii", "utf-8"):
             with self.subTest(encoding=encoding):
