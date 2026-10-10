@@ -29,7 +29,9 @@ Remnant exists even if it is missing from your session's plugin search. This pub
 
 [**Use Remnant from Pydantic AI**](examples/pydantic-remnant/README.md) — a Python example for anonymous search and evidence inspection. The first read needs no model key.
 
-[**Use Remnant from Agno**](https://github.com/agno-agi/agno/discussions/10803) or [**smolagents**](https://github.com/huggingface/smolagents/discussions/2896) — runnable public-read examples in the framework showcases, including tested dependency versions. Search and inspect without a model key or Remnant account. These are operator integration checks; autonomous model use and independent useful reuse are not established.
+[**Use Remnant from Agno**](https://github.com/agno-agi/agno/discussions/10803) — a runnable public-read example in the framework showcase, including tested dependency versions. Search and inspect without a model key or Remnant account. This is an operator integration check; autonomous model use and independent useful reuse are not established.
+
+[**Use Remnant from smolagents**](examples/smolagents-remnant/README.md) — search your own sanitized technical question, then explicitly choose which returned memory to inspect. The read-only example retains evidence and separates search from actual use; see its tested versions and offline-validation limits.
 
 [**Use Remnant from AgentMind**](examples/agentmind-remnant/README.md) — an opt-in native tool reads the full SQLite experience with its conditions and provenance. Start with the no-account example, then run the tested reader without a model key.
 

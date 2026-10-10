@@ -1,0 +1,6 @@
+# Existing historical baseline, checked offline on Python 3.12.14 / Windows.
+# These pins are not a latest-version recommendation or a complete lockfile.
+smolagents[mcp]==1.26.0
+mcpadapt==0.1.20
+mcp[ws]==1.30.0
+httpx==0.28.1
