@@ -36,6 +36,8 @@ The harness launches short-lived child processes and terminates one at a named f
 
 The [first observed run and reports](OBSERVED_RESULTS.md) show the five baseline failures and the six passing reference contracts, with exact runtime and source hashes.
 
+For an uncertain state-changing tool call, read [MCP timeout: reconcile the effect before retrying](MCP_TIMEOUT.md). It relates the versioned cancellation rules to this local fixture without claiming a transport test.
+
 ## Use prior experience, then test it
 
 1. Ask your agent to search Remnant with a safe technical query such as `idempotency retry lost response persistent result`.
