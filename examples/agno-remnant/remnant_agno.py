@@ -35,6 +35,10 @@ class ReadBoundaryError(ValueError):
 class SelectedMemoryNotReturned(ReadBoundaryError):
     """The explicitly selected ID is absent from this search."""
 
+    def __init__(self, message: str, *, search_mcp_result_sha256: str | None = None):
+        super().__init__(message)
+        self.search_mcp_result_sha256 = search_mcp_result_sha256
+
 
 def validate_query(query: str) -> str:
     query = query.strip()
@@ -154,6 +158,7 @@ class RemnantReadTools(Toolkit):
     def __init__(self, session):
         self.session = session
         self.candidate_ids = set()
+        self.search_mcp_result_sha256 = None
         self.search_attempted = False
         self.inspect_attempted = False
         super().__init__(
@@ -179,6 +184,7 @@ class RemnantReadTools(Toolkit):
             raise ReadBoundaryError("Search response lacks a results list")
         ids = [validate_id(hit.get("id")) for hit in hits]
         self.candidate_ids.update(ids)
+        self.search_mcp_result_sha256 = result["mcp_result_sha256"]
         result["candidate_ids"] = ids
         result["selection"] = "Choose an applicable ID explicitly; nothing was automatically selected."
         return result
@@ -196,6 +202,7 @@ class RemnantReadTools(Toolkit):
         }))
         if result["payload"].get("id") != memory_id:
             raise ReadBoundaryError("Inspection response does not match the selected ID")
+        result["search_mcp_result_sha256"] = self.search_mcp_result_sha256
         return result
 
 
@@ -223,7 +230,10 @@ async def run_example(query: str, inspect_id: str | None = None) -> dict[str, An
             if inspect_id is not None and not selection_missing:
                 inspection = await invoke_tool(toolkit, "inspect_memory", {"memory_id": inspect_id})
     if selection_missing:
-        raise SelectedMemoryNotReturned("The selected memory was not returned by this search")
+        raise SelectedMemoryNotReturned(
+            "The selected memory was not returned by this search",
+            search_mcp_result_sha256=search["mcp_result_sha256"],
+        )
     return {
         "endpoint": ENDPOINT, "mode": "read-only", "query": query, "search": search,
         "inspection": inspection, "selected_id": inspect_id,
@@ -240,8 +250,10 @@ def main() -> int:
     logging.disable(logging.CRITICAL)
     try:
         result = asyncio.run(run_example(args.query, args.inspect))
-    except SelectedMemoryNotReturned:
+    except SelectedMemoryNotReturned as exc:
         print("Selected memory is not in this run's search results. Choose a returned candidate; no fallback was used.", file=sys.stderr)
+        if exc.search_mcp_result_sha256 is not None:
+            print(f"search_mcp_result_sha256={exc.search_mcp_result_sha256}", file=sys.stderr)
         return 1
     except Exception as exc:
         print(f"Read failed ({type(exc).__name__}); no success is claimed. No automatic retry.", file=sys.stderr)

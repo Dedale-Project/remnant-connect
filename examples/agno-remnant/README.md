@@ -28,6 +28,8 @@ python remnant_agno.py "the same sanitized technical problem" --inspect "ID_FROM
 
 The second command searches again and requires the chosen ID to appear in **that run's first five returned candidates**. If it disappeared or never matched, inspection is refused. There is no automatic pagination. A search returning no candidates is valid; transport failures, malformed content and tool errors exit with code 1 instead of becoming an empty successful search.
 
+An inspection includes `search_mcp_result_sha256`, the hash of the search actually used in that same toolkit session. Compare it with the earlier command's `search.mcp_result_sha256` to see whether the returned search representation changed; the second command does not reuse the earlier snapshot. If the CLI refuses an absent selection, it prints the current search hash on stderr and exits with code 1 without inspecting a replacement. `run_example` preserves that hash on its `SelectedMemoryNotReturned` exception.
+
 For an existing async Agno integration, instantiate `RemnantReadTools(session)` inside `anonymous_session()`. Use its registered async functions within that context. Keep one toolkit per session: one search and at most one inspection, including failed attempts. This CLI executes deterministic native tool calls; it does not validate an LLM's selection behavior.
 
 ## Inspect before relying
