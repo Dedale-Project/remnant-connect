@@ -19,6 +19,7 @@ jobs:
       - run: npm run validate:plugin
       - run: npm run test:bridge
       - run: npm run test:feedback
+      - run: node --import tsx --test examples/remote-mcp/test_client_evidence.ts
       - run: npm run test:close-loop
       - name: Reproduce the committed portable archive
         run: |

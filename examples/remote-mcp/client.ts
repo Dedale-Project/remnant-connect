@@ -59,6 +59,9 @@ export async function searchAndInspect(url: URL, query: string, fetcher: typeof 
     const inspected = typeof first?.id === "string"
       ? toolValue(await client.callTool({ name: "inspect_memory", arguments: { memoryId: first.id } }))
       : null;
+    if (inspected !== null && inspected.id !== first?.id) {
+      throw new Error("Remote MCP inspection did not match the selected memory ID.");
+    }
     return { tools: tools.map(tool => tool.name), search, inspected };
   } finally {
     try { if (transport.sessionId) await transport.terminateSession(); }
