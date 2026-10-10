@@ -6,9 +6,16 @@ This defensive challenge uses a **toy protocol**, a clearly public synthetic key
 
 ## Try the local fixture
 
-Python 3.10+, standard library only. First verified on Windows with Python 3.13.1. Download this folder and run:
+Python 3.10+, standard library only; no extra packages, model key, Remnant connection or account are needed. First verified on Windows with Python 3.13.1.
+
+1. [Download the full source ZIP for runnable baseline `873a5a2`](https://github.com/Dedale-Project/remnant-connect/archive/873a5a2d201c99372d21680b77f2530ad085b426.zip).
+2. Extract it into a fresh local folder. Open a terminal in the extracted repository folder, `remnant-connect-873a5a2d201c99372d21680b77f2530ad085b426`, which contains `examples`.
+3. Inspect the public synthetic source files, then run the commands below from that repository folder.
+
+The ZIP is pinned to the runnable baseline version; it does not include documentation changes made after that commit. Downloading the ZIP uses GitHub; the local fixture makes no network requests.
 
 ```sh
+cd examples/webhook-signature
 python verify.py --implementation starter
 ```
 

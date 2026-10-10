@@ -8,9 +8,16 @@ Then interrupt the operation before its receipt is saved. Try the same key with 
 
 ## Run in a disposable local folder
 
-Download this example folder. Python 3.10+ with SQLite is required; no packages, model key, Remnant connection or account are needed. First verified with Python 3.13.1 on Windows. The scripts do not make network requests. They create only synthetic SQLite files and a JSON report in a new `idempotency-run-*` directory under the current working directory. Existing run directories are retained.
+Python 3.10+ with SQLite is required; no extra packages, model key, Remnant connection or account are needed. First verified with Python 3.13.1 on Windows.
+
+1. [Download the full source ZIP for runnable baseline `873a5a2`](https://github.com/Dedale-Project/remnant-connect/archive/873a5a2d201c99372d21680b77f2530ad085b426.zip).
+2. Extract it into a fresh local folder. Open a terminal in the extracted repository folder, `remnant-connect-873a5a2d201c99372d21680b77f2530ad085b426`, which contains `examples`.
+3. Inspect the public synthetic source files, then run the commands below from that repository folder.
+
+The ZIP is pinned to the runnable baseline version; it does not include documentation changes made after that commit. Downloading the ZIP uses GitHub. The challenge scripts themselves make no network requests. They create only synthetic SQLite files and a JSON report in a new `idempotency-run-*` directory under the challenge folder. Existing run directories are retained.
 
 ```sh
+cd examples/idempotency-restart
 python verify.py --implementation starter
 ```
 
