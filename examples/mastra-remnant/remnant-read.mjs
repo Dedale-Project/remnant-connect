@@ -46,6 +46,9 @@ export async function firstRead(query = 'data ETL incremental cursor pagination 
   const connection = await connectRemnantRead();
   try {
     const search = readData(await connection.tools.remnant_search_memories.execute({ query, limit: 3 }));
+    if (!search || typeof search !== 'object' || !Array.isArray(search.results)) {
+      throw new Error('Invalid search response: expected a results array');
+    }
     const candidate = search.results?.find(item => item.contentAccess?.fullContentAvailable);
     if (!candidate) return { status: 'no_public_match', query, search };
     const memory = readData(await connection.tools.remnant_inspect_memory.execute({
