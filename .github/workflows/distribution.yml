@@ -1,0 +1,26 @@
+name: Distribution and MCP contracts
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run validate:distribution
+      - run: npm run validate:plugin
+      - run: npm run test:bridge
+      - run: npm run test:feedback
+      - run: npm run test:close-loop
+      - name: Reproduce the committed portable archive
+        run: |
+          npm run build:plugin
+          git diff --exit-code -- plugins/remnant releases

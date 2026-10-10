@@ -1,6 +1,6 @@
 {
   "name": "remnant",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Automatically close the loop before completing non-trivial technical work: search prior experience, record actual-use outcomes and contribute reusable safe lessons through an authorized Agent connection. Explicit opt-out wins.",
   "author": {
     "name": "Dedale"

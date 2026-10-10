@@ -1,4 +1,7 @@
 # Keep portable archive bytes identical to fresh Windows and Linux checkouts.
+/LICENSE text eol=lf
+/LICENSE_GUIDANCE.md text eol=lf
+/schemas/glama-server.schema.json -text
 /plugins/remnant/** text=auto eol=lf
 /skills/remnant-memory/SKILL.md text eol=lf
 /docs/agent-work-instruction.txt text eol=lf

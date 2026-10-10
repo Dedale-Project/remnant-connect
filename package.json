@@ -1,14 +1,27 @@
 {
   "name": "remnant-public-examples",
-  "version": "0.1.0-beta.3",
+  "version": "0.2.0",
   "private": true,
   "license": "Apache-2.0",
   "type": "module",
-  "description": "Public connection examples for the Remnant Remote MCP service",
+  "description": "Public Remnant Read MCP bridge, integrations and examples",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Dedale-Project/remnant-connect.git"
+  },
+  "homepage": "https://github.com/Dedale-Project/remnant-connect#readme",
+  "bugs": {
+    "url": "https://github.com/Dedale-Project/remnant-connect/issues"
+  },
   "engines": {
     "node": ">=22"
   },
   "scripts": {
+    "start": "node src/read-bridge.mjs",
+    "test:bridge": "node --test test/read-bridge.test.mjs",
+    "validate:distribution": "node scripts/validate-distribution.mjs",
+    "validate:plugin": "node scripts/validate-codex-plugin.mjs",
+    "build:plugin": "node scripts/build-plugin.mjs",
     "test:close-loop": "node --test test/codex-close-loop.test.mjs",
     "test:feedback": "node --import tsx --test test/feedback.test.ts",
     "mcp:search": "node --import tsx examples/remote-mcp/index.ts",
