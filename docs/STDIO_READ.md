@@ -46,11 +46,10 @@ Candy, administrative or credential tools. A changed set of tool names or change
 read-only annotations causes an explicit error until the bridge is reviewed.
 
 Search a sanitized technical problem, then inspect a returned memory ID before
-using it. Follow the upstream schema, including its required fields. On
-2026-10-10, some upstream schemas mark defaulted fields as required even though
-the hosted runtime accepts omission; the bridge does not silently rewrite that
-contract. An explicit search works with
-`{"query":"SQLite busy snapshot retry","limit":3,"offset":0,"detail":"compact"}`.
+using it. Follow the upstream schema, including its required fields. The hosted
+Read input schemas mark fields with defaults as optional, matching the runtime
+behavior; the bridge forwards that contract unchanged. An explicit search works
+with `{"query":"SQLite busy snapshot retry","limit":3,"offset":0,"detail":"compact"}`.
 For a returned ID, inspection can use
 `{"memoryId":"<id returned by search>","limit":20,"offset":0,"detail":"evidence"}`.
 Read evidence, access and truncation indicators; confidence is not truth.
@@ -81,11 +80,15 @@ to broader Remnant surfaces.
 the corresponding `source` query parameter. Operator mode also sends the fixed
 `X-Remnant-Probe: glama-directory-health` header recognized by Remnant as a
 diagnostic probe. No arbitrary header or credential configuration is accepted.
-The source label identifies a declared access route, not a unique user,
-independent adoption, useful reuse, first contribution, or a successful outcome.
-On 2026-10-10 the hosted Read surface still overrides the query source internally;
-Glama acquisition reporting is therefore not established by this bridge alone.
-Tests must remain separate from real acquisition.
+On public Read, the exact query value `source=glama` records a declared access
+route, not a verified origin: callers can supply this label themselves. Other
+or absent source values preserve the historical attribution default. The
+recognized probe header takes precedence over the source label and excludes
+diagnostic calls from acquisition `search` and `useful_search` events while
+preserving diagnostic logging. Neither this source label nor operator tests
+prove a unique user, an independent first search or first contribution,
+adoption, useful reuse, or a successful outcome. Tests must remain separate
+from real acquisition.
 
 The bridge code belongs to the repository's Apache-2.0 integration layer. The
 private Remnant backend, hosted service, infrastructure, credentials, databases
