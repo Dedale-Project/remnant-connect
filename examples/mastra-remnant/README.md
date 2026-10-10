@@ -22,7 +22,27 @@ node remnant-read.mjs "SQLite stale snapshot retry"
 
 Queries are sent to Remnant. Use generic technical terms; omit private logs, customer data and credentials.
 
-The search response must contain a `results` array. An empty array remains a valid `no_public_match`; a missing or non-array `results` fails the read instead of being presented as no matching experience. The three offline unit checks run with `node --test test-remnant-read.mjs` using mocked tools on the installed MCP client, without exercising the MCP transport.
+## Distinguish an empty search from a failed lookup
+
+The search response must contain a `results` array. A missing or non-array `results` raises `Invalid search response: expected a results array`. It must not become evidence that Remnant has no relevant experience.
+
+| Returned data | Standalone reader behavior |
+| --- | --- |
+| No `results` array | Reject the read and close the connection; do not inspect a memory. |
+| `results: []` | Return `no_public_match` and close the connection. |
+| A readable candidate in `results` | Inspect the first readable candidate and return `public_memory_read`. Inspecting it does not establish useful application. |
+
+`no_public_match` also covers a nonempty results array with no candidate marked `fullContentAvailable`. It describes this limited search, not the contents of the entire memory corpus. The table summarizes the reader's control flow; it is not complete validation of every result item or inspected memory.
+
+To run the three offline unit checks, also save [test-remnant-read.mjs](test-remnant-read.mjs) beside `remnant-read.mjs`, using files from the same branch or commit. Install the dependencies shown above first, then run:
+
+```sh
+node --test test-remnant-read.mjs
+```
+
+On 10 October 2026, the synthetic missing-`results` case failed its rejection assertion before the guard; the empty-array and readable-candidate controls passed. After the guard, all three passed on Windows with Node 24.13.0 and the pinned packages above. The tests use the real example functions and installed `MCPClient`, but mock `listTools`, tool execution and `disconnect`; network calls are blocked during the test run. Dependency installation still requires network access.
+
+This operator fixture demonstrates a client classification defect. It does not establish that the production server returned malformed data or measure retrieval quality, an actual task outcome or external adoption.
 
 ## Add the tools to your existing agent
 
