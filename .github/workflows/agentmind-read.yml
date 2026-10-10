@@ -1,0 +1,36 @@
+name: AgentMind anonymous read example
+on:
+  push:
+    paths:
+      - 'examples/agentmind-remnant/**'
+      - '.github/workflows/agentmind-read.yml'
+  pull_request:
+    paths:
+      - 'examples/agentmind-remnant/**'
+      - '.github/workflows/agentmind-read.yml'
+permissions:
+  contents: read
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: realcarsonterry/AgentMind
+          ref: 8478c6eed79d891b5537428d039838f4066c8df0
+          path: .agentmind-source
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install httpx==0.28.1 pydantic==2.13.5
+      - run: python -m pip check
+      - run: python -m unittest discover -s . -p "test_remnant_*.py" -v
+        working-directory: examples/agentmind-remnant
+        env:
+          PYTHONPATH: ${{ github.workspace }}/.agentmind-source/src
+          PYTHONDONTWRITEBYTECODE: '1'
