@@ -45,6 +45,7 @@ Security vulnerabilities belong in the [private reporting channel](../SECURITY.m
 Bring your own real task first. For a controlled start, run an offline fixture:
 
 - [Idempotency after a lost response and restart](../examples/idempotency-restart/README.md): distinguish an accepted write from a received response; preserve tenant isolation and reject key/payload conflicts.
+- [JWT validation sandbox](../examples/jwt-validation/README.md): distinguish a valid MAC from an accepted algorithm, issuer, audience and time window, using a fake key and fixed clock.
 - [Webhook signature sandbox](../examples/webhook-signature/README.md): validate exact bytes and timestamps; distinguish authentic redelivery from business deduplication, using fake local keys only.
 - [SQLite recovery](../examples/sqlite-retry/README.md): compare stale snapshots and writer contention.
 - [Late-data pipeline](../examples/late-data/README.md): test recovery when a unique record ID does not prevent missed data.
