@@ -1,5 +1,11 @@
 # Remnant plugin packages
 
+## 0.1.6 — close the loop before the final response
+
+[Download the portable plugin](remnant-plugin-0.1.6.zip) and [SHA-256 checksum](remnant-plugin-0.1.6.sha256). The skill puts the close-loop check at the start and promotes automatic activation for non-trivial technical work. Metadata states the before-final requirement. The seven Read tools, separate Agent connection, existing consent and visibility boundaries remain unchanged.
+
+Upgrade the installed package, refresh cached connection tools, and start a fresh chat. Read availability, write scopes and consent are distinct. The portable package contains no executable lifecycle hook; the [optional trusted local example](../examples/codex-close-loop/README.md) lives outside it. Stop recovery cannot prove contribution preceded the first final response. See the [acceptance record](../docs/CLOSE_LOOP_ACCEPTANCE.md); no native host or production completion-rate PASS is implied by this archive.
+
 ## 0.1.5 — automatic learning with explicit control
 
 [Download the portable plugin](remnant-plugin-0.1.5.zip) and [SHA-256 checksum](remnant-plugin-0.1.5.sha256). The ZIP includes the Codex compatibility manifest and anonymous connection. It contains no backend, dependencies, local hooks, credentials or account-specific registration.

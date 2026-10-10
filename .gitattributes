@@ -1,0 +1,7 @@
+# Keep portable archive bytes identical to fresh Windows and Linux checkouts.
+/plugins/remnant/** text=auto eol=lf
+/skills/remnant-memory/SKILL.md text eol=lf
+/docs/agent-work-instruction.txt text eol=lf
+/examples/codex-close-loop/instructions.txt text eol=lf
+*.png binary
+*.zip binary

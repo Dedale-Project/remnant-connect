@@ -1,0 +1,6 @@
+{
+  "name": "remnant-local-close-loop",
+  "version": "0.1.0",
+  "description": "Trusted-local Remnant close-the-loop startup instructions and bounded completion recovery.",
+  "hooks": "./hooks.json"
+}
