@@ -29,6 +29,8 @@ Queries are sent to Remnant. Keep credentials, private logs and customer data ou
 
 The CLI escapes Unicode in its JSON output for ASCII and Windows CP1252 streams; decoding that JSON preserves the original evidence text and metadata.
 
+For the meaning of each CLI status and a local outcome record, see [From inspection to an honest task outcome](EVIDENCE.md).
+
 ## Give an existing agent the read tools
 
 ```python
