@@ -1,4 +1,5 @@
 """Offline ID compatibility checks through the real AutoGen FunctionTool."""
+import asyncio
 import hashlib
 import json
 import socket
@@ -53,13 +54,15 @@ class MemoryIdTests(unittest.IsolatedAsyncioTestCase):
         return result, payload, raw
 
     async def test_canonical_ids_reach_native_tool_and_preserve_evidence(self):
-        for memory_id in (LEGACY_ID, "mem_" + "c" * 24, CURRENT_ID):
+        for memory_id in ("mem_" + "a" * length for length in range(16, 33)):
             with self.subTest(memory_id=memory_id):
                 result, payload, raw = await self.invoke(memory_id)
                 self.assertEqual(len(self.calls), 1)
                 self.assertEqual(result["evidence"], payload)
                 self.assertEqual(result["memory_version"], 3)
                 self.assertEqual(result["response_sha256"], hashlib.sha256(raw).hexdigest())
+                self.assertEqual(result["source_url"], f"https://remnant.dedale-bi.com/api/public/knowledge/{memory_id}/content")
+                self.assertEqual(result["public_url"], f"https://remnant.dedale-bi.com/knowledge/{memory_id}")
 
     async def test_invalid_ids_fail_before_transport(self):
         for memory_id in (
@@ -81,6 +84,25 @@ class MemoryIdTests(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(httpx.HTTPStatusError):
             await self.invoke(LEGACY_ID, payload={"error": "Not found"}, status=404)
         self.assertEqual(len(self.calls), 1)
+
+    async def test_server_errors_and_missing_evidence_are_not_successful_reads(self):
+        for status in (302, 429, 503):
+            with self.subTest(status=status):
+                with self.assertRaises(httpx.HTTPStatusError):
+                    await self.invoke(LEGACY_ID, payload={"error": "Synthetic failure"}, status=status)
+                self.assertEqual(len(self.calls), 1)
+        for payload in ({"id": LEGACY_ID}, {"id": LEGACY_ID, "insight": " "}):
+            with self.subTest(payload=payload):
+                with self.assertRaisesRegex(ValueError, "no readable experience"):
+                    await self.invoke(LEGACY_ID, payload=payload)
+
+    async def test_cancellation_before_transport(self):
+        token = CancellationToken()
+        token.cancel()
+        with patch.object(reader, "_fetch", side_effect=AssertionError("Transport forbidden")) as fetch:
+            with self.assertRaises(asyncio.CancelledError):
+                await reader.remnant_public_experience.run_json({"memory_id": LEGACY_ID}, token)
+            fetch.assert_not_called()
 
 
 if __name__ == "__main__":
