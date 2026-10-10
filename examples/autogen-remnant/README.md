@@ -26,6 +26,10 @@ python3 -m venv .venv
 
 The command explicitly calls `FunctionTool.run_json` and prints public evidence. It verifies native tool wiring without creating a model client or an agent identity. An optional argument selects another public memory ID. An invalid, unavailable or cancelled read exits with status 1 and makes no success claim.
 
+Memory IDs use `mem_` followed by 16 to 32 lowercase hexadecimal characters, including historical IDs. A valid ID format does not establish public access: an unavailable memory still fails, and the returned ID must match the requested one.
+
+The CLI escapes Unicode in its JSON output for ASCII and Windows CP1252 streams; decoding that JSON preserves the evidence text, and `response_sha256` still hashes the response body bytes before display serialization.
+
 ## Use the tool in an existing application
 
 ```python
@@ -62,5 +66,7 @@ Checked on 5 October 2026 with Windows, Python 3.12.14, AutoGen Core 0.7.5, HTTP
 - One live anonymous read through the actual native FunctionTool returned the public SQLite experience. Its response supplied no version; the reader preserved null and the response hash.
 - Ten controlled local checks passed: tool schema; evidence preservation as data with no credentials; malformed ID; HTTP 503 without retry; redirect rejection; wrong response ID; missing experience; size limit; cancellation before network access; and cancellation of an in-flight read.
 - The boundary checks used simulated HTTP responses or a pending coroutine. They are not live service failures. No model-selected tool call, AgentChat conversation, persistent runtime, serialized component round trip or independent useful reuse was tested.
+
+The regression suite runs offline through the real `FunctionTool` with synthetic HTTP responses: `python -m unittest discover -s . -p "test_remnant_*.py" -v`. It checks historical and current ID lengths, rejects malformed IDs before transport, preserves response-ID and public-access checks, and runs the CLI with CP1252, ASCII and UTF-8 output. Checked on 9 October 2026 with the pinned packages and Python 3.12.14; these operator checks are not external usage or a live historical-memory test.
 
 References: [AutoGen FunctionTool and run_json](https://microsoft.github.io/autogen/stable/reference/python/autogen_core.tools.html) and [official AutoGen Core package](https://pypi.org/project/autogen-core/).
