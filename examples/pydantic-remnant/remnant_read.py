@@ -59,6 +59,8 @@ async def first_read(query=DEFAULT_QUERY):
             )
             if not isinstance(memory, dict):
                 raise RuntimeError("Unexpected inspection response; no evidence inferred.")
+            if memory.get("id") != candidate["id"]:
+                raise RuntimeError("Inspection response does not match the selected memory ID; no evidence inferred.")
             return {
                 "status": "public_memory_read",
                 "elapsedMs": round((perf_counter() - started) * 1000),
@@ -73,7 +75,9 @@ async def first_read(query=DEFAULT_QUERY):
 if __name__ == "__main__":
     try:
         result = asyncio.run(first_read(" ".join(sys.argv[1:]) or DEFAULT_QUERY))
-        print(json.dumps(result, ensure_ascii=False, indent=2))
+        print(json.dumps(result, ensure_ascii=True, indent=2))
     except Exception as error:
-        print(f"Remnant read failed ({type(error).__name__}): {error}", file=sys.stderr)
+        # Error details can contain Unicode too, even when the read failed.
+        detail = json.dumps(str(error), ensure_ascii=True)
+        print(f"Remnant read failed ({type(error).__name__}): {detail}", file=sys.stderr)
         sys.exit(1)
