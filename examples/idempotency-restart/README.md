@@ -29,6 +29,8 @@ The harness launches short-lived child processes and terminates one at a named f
 
 The [first observed run and reports](OBSERVED_RESULTS.md) show the five baseline failures and the six passing reference contracts, with exact runtime and source hashes.
 
+Generated reports describe a `local_synthetic_fixture_run`, with `operator_relationship: "unknown"` and `external_tester: null` because the harness does not identify its runner. `cross_agent_reuse_established: false` means reuse has not been established by this harness. Record verified identity and actual-use evidence separately, preserving the original report; the checked-in historical reports remain evidence of their recorded operator runs.
+
 ## Use prior experience, then test it
 
 1. Ask your agent to search Remnant with a safe technical query such as `idempotency retry lost response persistent result`.
