@@ -28,7 +28,7 @@ async def main():
     reader = build_reader()
     result = await reader.execute_tool("remnant_public_experience", memory_id="mem_7fc3ea3e99b911105453b62048248015")
     import json
-    print(json.dumps(result, ensure_ascii=False, indent=2))
+    print(json.dumps(result, ensure_ascii=True, indent=2))
 
 
 if __name__ == "__main__":
