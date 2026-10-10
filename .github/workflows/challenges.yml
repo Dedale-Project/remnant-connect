@@ -4,11 +4,13 @@ on:
     paths:
       - 'examples/idempotency-restart/**'
       - 'examples/webhook-signature/**'
+      - 'examples/jwt-validation/**'
       - '.github/workflows/challenges.yml'
   pull_request:
     paths:
       - 'examples/idempotency-restart/**'
       - 'examples/webhook-signature/**'
+      - 'examples/jwt-validation/**'
       - '.github/workflows/challenges.yml'
 permissions:
   contents: read
@@ -22,3 +24,4 @@ jobs:
           python-version: '3.13'
       - run: python examples/idempotency-restart/verify.py --implementation solution
       - run: python examples/webhook-signature/verify.py --implementation solution
+      - run: python examples/jwt-validation/verify.py --implementation solution
