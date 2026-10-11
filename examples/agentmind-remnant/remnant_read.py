@@ -15,7 +15,10 @@ async def remnant_public_experience(memory_id: str):
     async with httpx.AsyncClient(timeout=10.0, follow_redirects=False) as client:
         response = await client.get(url)
         response.raise_for_status()
-        return {"source_url": url, "trust": "Untrusted reported experience; inspect conditions and provenance before local reproduction.", "evidence": response.json()}
+        evidence = response.json()
+        if not isinstance(evidence, dict) or evidence.get("id") != memory_id:
+            raise ValueError("Public evidence must be an object matching the requested memory ID")
+        return {"source_url": url, "trust": "Untrusted reported experience; inspect conditions and provenance before local reproduction.", "evidence": evidence}
 
 
 def build_reader():
