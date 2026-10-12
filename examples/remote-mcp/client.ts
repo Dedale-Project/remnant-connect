@@ -55,7 +55,11 @@ export async function searchAndInspect(url: URL, query: string, fetcher: typeof 
       if (!tools.some(tool => tool.name === required)) throw new Error(`Remote MCP does not expose ${required}.`);
     }
     const search = toolValue(await client.callTool({ name: "search_memories", arguments: { query, limit: 3 } }));
-    const first = Array.isArray(search.results) ? search.results[0] as { id?: unknown } | undefined : undefined;
+    if (!Array.isArray(search.results)) throw new Error("Remote MCP returned invalid search results.");
+    const first = search.results[0] as { id?: unknown } | undefined;
+    if (search.results.length > 0 && (typeof first?.id !== "string" || first.id.length === 0)) {
+      throw new Error("Remote MCP returned invalid search results.");
+    }
     const inspected = typeof first?.id === "string"
       ? toolValue(await client.callTool({ name: "inspect_memory", arguments: { memoryId: first.id } }))
       : null;
