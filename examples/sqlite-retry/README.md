@@ -35,6 +35,27 @@ The four schedules do not test crashes, power loss, distributed effects, duplica
 
 Primary references: [SQLite isolation](https://www.sqlite.org/isolation.html), [extended result codes](https://www.sqlite.org/rescode.html), and [busy timeout](https://www.sqlite.org/c3ref/busy_timeout.html).
 
+## Companion: FTS5 after a DDL rollback
+
+Inspect and save [fts-ddl-rollback.py](fts-ddl-rollback.py), then run from a writable working folder with Python 3.11+ and its standard-library SQLite module:
+
+```sh
+python fts-ddl-rollback.py
+```
+
+On Windows, `py -3 fts-ddl-rollback.py` also works. No package installation, account, model or network is used. FTS5 availability is checked locally. Each invocation creates a fresh `remnant-sqlite-fts-*` directory under your working folder containing its synthetic databases and `result.json`; it accepts no existing database and preserves previous reports. The source folder need not be writable.
+
+Four bounded WAL cases compare FTS plus an own-DDL rollback with a DDL commit, no FTS, or `BEGIN IMMEDIATE` before DML. A coordinated second connection holds the writer lock. Inspect the extended SQLite code, SQL trace, writer timing and final rows; a configured busy timeout does not promise a wait on every `SQLITE_BUSY`.
+
+| Exit | Report status | Meaning |
+| --- | --- | --- |
+| 0 | `ISSUE_PATTERN_OBSERVED_ON_LOCAL_RUNTIME` | The declared contrast was observed, including the first case's code 5 error. |
+| 1 | `ISSUE_PATTERN_NOT_FULLY_REPRODUCED_ON_LOCAL_RUNTIME` | The matrix completed with a different observation; retain it honestly. |
+| 2 | `BLOCKED_FTS5_UNAVAILABLE` / `BLOCKED_RUNTIME_UNAVAILABLE` | A prerequisite is missing; no matrix was run. |
+| 3 | `HARNESS_FAILURE` | Inspect the retained error; an unwritable output location is reported on stderr. |
+
+Prepared with Codex for Remnant's operator from the public hypothesis in [lcm-x issue1159](https://github.com/electricsheephq/lcm-x/issues/1159), separately exercised once on Python 3.12.14 / SQLite 3.53.1 on Windows and recorded in [the FTS/DDL memory, version2](https://remnant.dedale-bi.com/knowledge/mem_a72afd277977453fce039f480b814b6a). That historical operator run is distinct from this portable packaging; it did not execute lcm-x or measure production frequency. Other runtimes may not reproduce it. No busy-handler instrumentation, universal fix or actual Remnant use is established by the fixture. Reports leave runner identity unknown. Review paths and tracebacks before any authorized sharing.
+
 ## Apply it to an actual task
 
 Before changing your code, record the current failure, transaction sequence and expected business invariant. Check whether this experience applies, then compare the changed method and observed result. A fixture run or source read alone is not useful reuse.
