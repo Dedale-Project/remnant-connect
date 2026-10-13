@@ -6,6 +6,7 @@ import hashlib
 import logging
 import socket
 import unittest
+from contextlib import contextmanager
 from unittest.mock import patch
 
 import httpx2
@@ -248,11 +249,61 @@ class SDKTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.tool_calls(), ["search_memories"])
 
     async def test_total_operation_timeout_is_bounded(self):
-        self.mode = "timeout"
-        with patch.object(app, "TIMEOUT_SECONDS", 0.1):
-            with self.assertRaises(TimeoutError):
-                await app.run_example("synthetic technical problem")
-        self.assertEqual(self.tool_calls(), ["search_memories"])
+        # A wall-clock race cannot require a tools/call before a tiny deadline:
+        # slow initialization is legitimately covered by the same total budget.
+        # Expire the real outer scope only once each target phase has started.
+        real_fail_after = app.anyio.fail_after
+        regular_handler = self.transport.handler
+        for phase in ("initialize", "tools/call", "DELETE"):
+            with self.subTest(phase=phase):
+                self.requests.clear()
+                budgets, reached, cancelled = [], [], []
+
+                @contextmanager
+                def observed_budget(delay, *args, **kwargs):
+                    record = {"delay": delay, "active": True}
+                    with real_fail_after(delay, *args, **kwargs) as scope:
+                        record["scope"] = scope
+                        budgets.append(record)
+                        try:
+                            yield scope
+                        finally:
+                            record["active"] = False
+
+                async def blocked_phase(request):
+                    operation = request.method
+                    if request.method == "POST":
+                        operation = json.loads(request.content)["method"]
+                    if operation != phase:
+                        return await regular_handler(request)
+                    self.requests.append(request)
+                    reached.append(operation)
+                    self.assertTrue(budgets, "The total budget must start before connection")
+                    outer = budgets[0]
+                    self.assertTrue(outer["active"], "The total budget must include cleanup")
+                    self.assertEqual(outer["delay"], app.TIMEOUT_SECONDS)
+                    scope = outer["scope"]
+                    self.assertFalse(scope.cancel_called)
+                    # This drives AnyIO's real deadline/cancellation machinery;
+                    # no fake TimeoutError or altered production budget.
+                    scope.deadline = app.anyio.current_time()
+                    try:
+                        await app.anyio.sleep_forever()
+                    except app.anyio.get_cancelled_exc_class():
+                        cancelled.append(operation)
+                        raise
+
+                with patch.object(app.anyio, "fail_after", observed_budget), \
+                     patch.object(self.transport, "handler", blocked_phase):
+                    with self.assertRaises(TimeoutError):
+                        await app.run_example("synthetic technical problem")
+                self.assertEqual(reached, [phase])
+                self.assertEqual(cancelled, [phase])
+                self.assertFalse(budgets[0]["active"])
+                self.assertTrue(budgets[0]["scope"].cancel_called)
+                self.assertTrue(budgets[0]["scope"].cancelled_caught)
+                expected = [] if phase == "initialize" else ["search_memories"]
+                self.assertEqual(self.tool_calls(), expected)
 
 
 class BoundaryTests(unittest.IsolatedAsyncioTestCase):
