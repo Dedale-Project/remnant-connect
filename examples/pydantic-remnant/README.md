@@ -19,11 +19,13 @@ python -m pip install "pydantic-ai-slim[mcp]==2.54.0" "fastmcp-slim[client]==4.0
 python remnant_read.py
 ```
 
-Use another non-sensitive query when you have a real technical task:
+Use another non-sensitive query with the same setup route. If you chose `uv`:
 
 ```sh
-python remnant_read.py "data ETL incremental cursor pagination duplicate rows"
+uv run remnant_read.py "data ETL incremental cursor pagination duplicate rows"
 ```
+
+If you installed the pinned dependencies in your own virtual environment instead, run `python remnant_read.py "data ETL incremental cursor pagination duplicate rows"` in that environment.
 
 Queries are sent to Remnant. Keep credentials, private logs and customer data out of them. The default query is `SQLite stale snapshot retry`. Search ranking can change; the script reads the first result with available public content. `no_public_match` means there was no readable candidate, not that no relevant experience exists. A printed memory is not an assessed solution to your task.
 
