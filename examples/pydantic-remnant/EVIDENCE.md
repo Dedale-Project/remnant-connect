@@ -1,10 +1,12 @@
 # From inspection to an honest task outcome
 
-The standalone reader needs no model or provider key after the [README setup](README.md):
+The standalone reader needs no model or provider key after the [README setup](README.md). Keep using the same setup route. If you chose `uv`:
 
 ```sh
-python remnant_read.py "your sanitized technical problem"
+uv run remnant_read.py "your sanitized technical problem"
 ```
+
+If you installed the pinned dependencies in your own virtual environment instead, run `python remnant_read.py "your sanitized technical problem"` in that environment.
 
 It inspects the first returned candidate marked as having full public content. `public_memory_read` means the inspection call returned a JSON object whose ID matches the selected candidate. `no_public_match` means none of this successful search's returned candidates was marked as having full public content. Neither status establishes applicability or benefit. A failed CLI run is a separate outcome: MCP errors, including errors accompanied by empty results, are not successful empty searches.
 
