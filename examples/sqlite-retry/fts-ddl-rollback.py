@@ -167,7 +167,7 @@ EXIT_CODES = {
 
 def main():
     argparse.ArgumentParser(description=__doc__).parse_args()
-    report = {"schemaVersion": 1, "fixtureVersion": "1.0.0",
+    report = {"schemaVersion": 1, "fixtureVersion": "1.0.1",
               "startedAt": datetime.now(timezone.utc).isoformat(),
               "protocolSource": "https://github.com/electricsheephq/lcm-x/issues/1159",
               "sourceMemory": {"id": "mem_a72afd277977453fce039f480b814b6a", "version": 2},
@@ -196,8 +196,13 @@ def main():
                 probe.execute("CREATE VIRTUAL TABLE capability_probe USING fts5(body)")
                 report["fts5Available"] = True
             except sqlite3.Error as exc:
-                report["fts5Available"] = False
                 report["capabilityError"] = error_record(exc)
+                if (str(exc).strip().lower() == "no such module: fts5"
+                        and getattr(exc, "sqlite_errorcode", sqlite3.SQLITE_ERROR) == sqlite3.SQLITE_ERROR):
+                    report["fts5Available"] = False
+                else:
+                    # A failed probe does not establish that FTS5 is unavailable.
+                    raise
             finally:
                 probe.close()
             if not report["fts5Available"]:

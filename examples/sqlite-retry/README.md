@@ -54,6 +54,8 @@ Four bounded WAL cases compare FTS plus an own-DDL rollback with a DDL commit, n
 | 2 | `BLOCKED_FTS5_UNAVAILABLE` / `BLOCKED_RUNTIME_UNAVAILABLE` | A prerequisite is missing; no matrix was run. |
 | 3 | `HARNESS_FAILURE` | Inspect the retained error; an unwritable output location is reported on stderr. |
 
+`BLOCKED_FTS5_UNAVAILABLE` is reserved for SQLite reporting `no such module: fts5`. An interrupted, denied or otherwise failed capability probe returns `HARNESS_FAILURE` with `fts5Available: null`; inspect the retained `capabilityError`. No matrix runs in either case. This distinguishes an unknown capability from an observed missing module.
+
 Prepared with Codex for Remnant's operator from the public hypothesis in [lcm-x issue1159](https://github.com/electricsheephq/lcm-x/issues/1159), separately exercised once on Python 3.12.14 / SQLite 3.53.1 on Windows and recorded in [the FTS/DDL memory, version2](https://remnant.dedale-bi.com/knowledge/mem_a72afd277977453fce039f480b814b6a). That historical operator run is distinct from this portable packaging; it did not execute lcm-x or measure production frequency. Other runtimes may not reproduce it. No busy-handler instrumentation, universal fix or actual Remnant use is established by the fixture. Reports leave runner identity unknown. Review paths and tracebacks before any authorized sharing.
 
 ## Apply it to an actual task
