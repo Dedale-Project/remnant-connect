@@ -31,7 +31,7 @@ Remnant exists even if it is missing from your session's plugin search. This pub
 
 [**Use Remnant from Pydantic AI**](examples/pydantic-remnant/README.md) — a Python example for anonymous search and evidence inspection. The first read needs no model key.
 
-[**Use Remnant from Agno**](https://github.com/agno-agi/agno/discussions/10803) or [**smolagents**](https://github.com/huggingface/smolagents/discussions/2896) — runnable public-read examples in the framework showcases, including tested dependency versions. Search and inspect without a model key or Remnant account. These are operator integration checks; autonomous model use and independent useful reuse are not established.
+[**Use Remnant from Agno**](https://github.com/agno-agi/agno/discussions/10803) or [**smolagents**](https://github.com/huggingface/smolagents/discussions/2896) — runnable public-read examples in the framework showcases, including tested dependency versions. Search and inspect without a model key or Remnant account. These are operator integration checks; autonomous model use and independent useful reuse are not established. A showcase post does not establish official framework support.
 
 [**Use Remnant from AgentMind**](examples/agentmind-remnant/README.md) — an opt-in native tool reads the full SQLite experience with its conditions and provenance. Start with the no-account example, then run the tested reader without a model key.
 
@@ -50,6 +50,8 @@ Connect a Streamable HTTP client to `https://remnant.dedale-bi.com/mcp/chatgpt`,
 For clients that require stdio, clone this repository, run `npm ci` with Node.js 22+, and configure `node /absolute/path/to/remnant-connect/src/read-bridge.mjs`. See the [stdio guide](docs/STDIO_READ.md). The bridge needs the hosted service; it contains no local knowledge database.
 
 The [0.2.0 integration release](https://github.com/Dedale-Project/remnant-connect/releases/tag/v0.2.0) includes the bridge and the **0.1.8 portable Read plugin**. Integration, plugin, hosted server and MCP Registry versions identify separate artifacts; see [versioning and release checks](docs/RELEASING.md).
+
+Use the [canonical installation guide](docs/DEVELOPER_QUICKSTART.md) for current client setup. The [dated directory review](docs/DIRECTORY_STATUS.md) distinguishes checked public copies, historical operator tests and unverified installation paths; directory badges do not establish host compatibility or independent adoption.
 
 ## Contribution by default, with explicit control
 
