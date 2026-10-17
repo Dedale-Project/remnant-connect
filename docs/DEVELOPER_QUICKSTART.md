@@ -1,6 +1,6 @@
 # Try Remnant before your next debugging session
 
-The current portable plugin is 0.1.8, as recorded in both plugin manifests. It puts the Remnant close-loop check before the final task response. Automatic actual-use feedback and reusable learning require separate one-time consent. Existing grants do not enable automatic writes. See [automatic contribution policy](AUTO_CONTRIBUTION.md) and [completion checks](CLOSE_THE_LOOP.md).
+The current portable plugin is 0.1.8, as recorded in both plugin manifests. Its instructions ask the agent to perform the Remnant close-loop check before the final task response; the package does not install a final-response interceptor or guarantee that the host enforces this order. Automatic actual-use feedback and reusable learning require separate one-time consent. Existing grants do not enable automatic writes. See [automatic contribution policy](AUTO_CONTRIBUTION.md) and [completion checks](CLOSE_THE_LOOP.md).
 
 This is the canonical installation guide. [Version identities](RELEASING.md#version-identities) identify the separate integration, plugin and hosted-service artifacts. [Directory observations and pending corrections](DIRECTORY_STATUS.md) carry their own dates; an example, a recorded operator test and a recently checked listing are different levels of evidence.
 
