@@ -44,8 +44,11 @@ output schema is validated using the SDK's JSON Schema validator; an invalid
 result becomes `UPSTREAM_INVALID_RESPONSE`, never an input-parameter diagnosis.
 The low-level wire assertion checks this bridge error independently of a client's
 optional output-schema checks. A client's schema-checking convenience method can
-also reject an error object that does not match the advertised success schema;
-future backend output schemas must account for supported client behavior.
+also reject an error object that does not match the advertised success schema.
+The separately tested server contract `remnant-public-read-v1` therefore advertises
+explicit business-success, safe server-error and safe bridge-error alternatives.
+The server validates the selected success/error outcome before returning it;
+an error object cannot pass as an empty successful search.
 
 The exposed subset remains exactly seven tools. Missing, duplicate, unsafe or
 additional catalog entries fail closed. Unknown/write tools cannot dispatch.
@@ -59,14 +62,18 @@ approved adapter-compatibility work (014); these tests do not claim it is done.
 | HTTP 429 | `UPSTREAM_RATE_LIMITED` | `httpStatus`, validated `retryAfterSeconds` |
 | HTTP 503 or other HTTP failure | `UPSTREAM_UNAVAILABLE` | `httpStatus`; Retry-After for 503 |
 | HTTP 401/403 | `UPSTREAM_ACCESS_DENIED` | `httpStatus`; no auth attempt |
-| JSON-RPC -32602 | `UPSTREAM_INVALID_PARAMS` | `rpcCode`; correct the input |
+| JSON-RPC -32602, including a matching bounded HTTP 400 JSON response | `UPSTREAM_INVALID_PARAMS` | `rpcCode`; HTTP status when present; correct the input |
 | Malformed tool result/output | `UPSTREAM_INVALID_RESPONSE` | No raw result |
 | Deadline / caller cancellation | `UPSTREAM_TIMEOUT` / `REQUEST_CANCELLED` | No retry |
 
 Tool-call failures retain `isError` and the bounded machine-readable fields in
 `structuredContent`. Catalog failures use JSON-RPC error `data` for the same safe
-fields. Messages are fixed; upstream HTTP bodies are cancelled before the SDK can
-buffer them, and upstream protocol error messages/data are not copied.
+fields. Messages are fixed. HTTP error bodies are cancelled before the SDK can
+buffer them. The sole exception is HTTP 400 with JSON content: the bridge reads
+at most 16 KiB under the same deadline to recognize a matching JSON-RPC request ID
+and code -32602. Malformed, mismatched, oversized or other codes stay generic;
+upstream protocol error messages/data are never copied. A stalled body is cancelled
+at the deadline, without an automatic second request.
 
 Retry-After accepts unsigned integer seconds or a canonical IMF-fixdate HTTP date
 (`Sat, 17 Oct 2026 12:00:17 GMT`). Past dates become zero. Values cap at 3,600 seconds;
@@ -87,10 +94,16 @@ search, inspection or tool execution occurs. Its JSON receipt reports
 `REMOTE_SMOKE` separately from offline test output. Operational diagnostic logging
 can still occur. A remote failure is not evidence that the local fixtures failed.
 
-## Remaining backend acceptance
+## Separate backend validation and deployment
 
-This connector change does not modify the backend or complete all of proposal
-003. Real per-tool output schemas, their result validation and the backend's
-compatibility suite remain to be delivered and reviewed. No live output-schema
-coverage is inferred from a successful catalog smoke. The catalog/description
-size target in 018 and the seven-framework matrix in 014 are separate work.
+On 2026-10-17, a separate local server candidate was exercised with actual business
+results for eleven legacy public tools and the seven-tool Read surface, using
+SDK 1.30.0 and 1.32.1. A backend-to-bridge test covered success, a missing memory,
+rate limiting and HTTP 400/-32602. Those disposable local runs used no production
+credentials or knowledge. The backend source remains outside this public repository.
+
+This is local compatibility evidence, not a deployed-server assertion. The earlier
+same-day remote catalog smoke advertised no output schemas; initialization/listing
+alone cannot establish live business-result conformance. Recheck the released server
+and bridge revisions together after deployment. Catalog size work (018) and the
+seven-framework matrix (014) remain separate evidence.
