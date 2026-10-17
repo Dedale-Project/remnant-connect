@@ -100,5 +100,8 @@ availability and data permissions are governed separately.
 Run `node --test test/read-bridge.test.mjs` for offline contracts covering the SDK
 handshake, exact catalog/schema forwarding, result preservation, refusal of
 writes, catalog drift, concurrent sessions, timeout, cancellation and stdio entry.
-The offline tests do not call Remnant or create usage. A live smoke test should
-use `operator` attribution and perform a real search and evidence inspection.
+The offline tests do not call Remnant or create usage. The [versioned Read
+contract](READ_CONTRACT.md) adds named current/historical clients, result-shape
+fixtures and safe error/retry-hint checks. Run `npm run smoke:read-contract` only
+when an explicit remote diagnostic is intended: it uses `operator` attribution
+and limits traffic to initialization and tools/list. It does not execute tools.
