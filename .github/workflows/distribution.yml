@@ -18,6 +18,13 @@ jobs:
       - run: npm run validate:distribution
       - run: npm run validate:plugin
       - run: npm run test:bridge
+      - run: node --test test/read-catalog.test.mjs
+      - run: node --import tsx --test test/adapter-compatibility.test.mjs test/adapter-matrix.test.mjs
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Adapter source-function fixtures (not native framework certification)
+        run: python -B test/adapter_compatibility_test.py
       - name: Install the named historical SDK outside the project
         run: npm install --prefix "$RUNNER_TEMP/remnant-historical-sdk" --no-save --ignore-scripts @modelcontextprotocol/sdk@1.30.0
       - name: Check current and historical Read clients with offline fixtures

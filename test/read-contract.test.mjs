@@ -9,7 +9,7 @@ import { CallToolResultSchema } from '@modelcontextprotocol/sdk/types.js';
 import { createReadBridge, READ_TOOL_NAMES } from '../src/read-bridge.mjs';
 import { catalog, fakeUpstream, json } from './fixtures/read-contract-v1.mjs';
 
-const contract = JSON.parse(await readFile(new URL('../schemas/read-contract-v1.json', import.meta.url), 'utf8'));
+const contract = JSON.parse(await readFile(new URL('../schemas/read-contract-v2.json', import.meta.url), 'utf8'));
 const packageInfo = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
 const installedCurrentSdk = JSON.parse(await readFile(new URL('../node_modules/@modelcontextprotocol/sdk/package.json', import.meta.url), 'utf8'));
 const clients = [{ version: '1.32.1', Client, InMemoryTransport, CallToolResultSchema }];
@@ -132,7 +132,8 @@ for (const sdk of clients) {
     assert.equal(requests.length, 0);
     for (const addedName of ['publish_memory', 'future_read_tool']) {
       const unsafe = await connect(t, fakeUpstream({ tools: [...catalog(), { ...catalog()[0], name: addedName }] }));
-      await assert.rejects(unsafe.client.listTools(), /UPSTREAM_CATALOG_CHANGED/);
+      assert.deepEqual((await unsafe.client.listTools()).tools.map(tool => tool.name), contract.toolNames);
+      await assert.rejects(unsafe.client.callTool({ name: addedName, arguments: {} }), error => error.code === -32602);
       assert.equal(unsafe.requests.filter(request => request.method === 'tools/call').length, 0);
     }
   });

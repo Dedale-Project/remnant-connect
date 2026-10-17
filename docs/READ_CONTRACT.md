@@ -1,6 +1,8 @@
-# Read bridge contract v1
+# Read bridge subset contract v2
 
-`schemas/read-contract-v1.json` names the public integration contract. The fixtures
+`schemas/read-contract-v2.json` names the current integration contract,
+`remnant-read-subset-v2`. The unchanged v1 manifest records the historical exact
+catalog policy; it is not the current implementation. The fixtures
 in `test/fixtures/read-contract-v1.mjs` are synthetic, account-free transport and
 schema examples. They are not captured backend memories or the real per-tool
 output schemas. `outputSchema` is optional MCP functionality; its absence from a
@@ -11,6 +13,7 @@ live tool is not a protocol violation.
 ```sh
 npm run test:bridge
 npm run test:read-contract
+node --test test/read-catalog.test.mjs
 ```
 
 The production bridge uses the pinned MCP SDK 1.32.1. The same local fixture suite
@@ -50,10 +53,38 @@ explicit business-success, safe server-error and safe bridge-error alternatives.
 The server validates the selected success/error outcome before returning it;
 an error object cannot pass as an empty successful search.
 
-The exposed subset remains exactly seven tools. Missing, duplicate, unsafe or
-additional catalog entries fail closed. Unknown/write tools cannot dispatch.
-Tolerating catalog additions through a versioned subset is still the separately
-approved adapter-compatibility work (014); these tests do not claim it is done.
+The exposed subset remains exactly the seven named tools, in fixed order. A
+well-formed additional read or write tool is ignored, never exposed or dispatched.
+The bridge validates the outer MCP tool structure before selection, but never
+compiles an ignored tool's JSON Schema. Its unsupported schema cannot break the
+supported subset. Missing names, duplicate names (including ignored names), unsafe
+annotations on supported tools, or selected schemas that cannot compile fail
+closed. Accepted definitions remain unchanged, including their complete schemas.
+The list result advertises `remnant/readSubsetContract: remnant-read-subset-v2`
+in `_meta`. This label grants no permission to expose another name.
+
+Catalog collection allows at most 64 received tools and eight pages, with cursor
+cycle rejection. Before SDK JSON/SSE parsing, a counting stream forwards at most
+1 MiB of decoded fetch bytes per tools/list response or session GET stream, and
+4 MiB in total per operation. The GET stream can also deliver the tools/list
+response; all its bytes, including notifications, count. Actual bytes are counted
+even if Content-Length is absent or false. Overflow aborts the request and cancels
+the stream with the existing `UPSTREAM_CATALOG_CHANGED` code. SSE remains
+incremental, so a complete result does not wait for stream EOF. The existing
+20-second asynchronous deadline, cancellation and no-retry policy still apply.
+
+These are byte and count limits, not process isolation. Fetch can allocate a
+single incoming chunk before the bridge sees it. The seven selected schemas are
+compiled synchronously; the deadline cannot preempt blocked JavaScript, and this
+change does not isolate schema-compiler CPU/memory or defend against every
+compromised schema. Tools/call POST payloads are outside this catalog-body limit;
+the session GET limit applies to everything received on that particular stream.
+
+Current SDK 1.32.1 and named historical SDK 1.30.0 exercise the new projection.
+An old v1 bridge binary still rejects additions; keep the server's old seven-tool
+projection for those clients. A new bridge passing tests is not proof that old
+binaries gained this behavior. See the [adapter matrix](ADAPTER_COMPATIBILITY.md)
+for framework-specific evidence and unexecuted native paths.
 
 ## Safe errors and retry hints
 
@@ -106,4 +137,4 @@ This is local compatibility evidence, not a deployed-server assertion. The earli
 same-day remote catalog smoke advertised no output schemas; initialization/listing
 alone cannot establish live business-result conformance. Recheck the released server
 and bridge revisions together after deployment. Catalog size work (018) and the
-seven-framework matrix (014) remain separate evidence.
+seven-framework matrix remain separately attributed evidence.

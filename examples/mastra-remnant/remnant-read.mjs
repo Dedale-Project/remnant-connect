@@ -1,9 +1,9 @@
-import { MCPClient } from '@mastra/mcp';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 
 // Keep this connection alive while the consuming Mastra agent uses these tools.
 export async function connectRemnantRead() {
+  const { MCPClient } = await import('@mastra/mcp');
   const client = new MCPClient({
     id: 'remnant-public-read',
     timeout: 10_000,
@@ -41,17 +41,20 @@ export function readData(result) {
   return JSON.parse(text);
 }
 
-export async function firstRead(query = 'data ETL incremental cursor pagination duplicate rows') {
+export async function firstRead(query = 'data ETL incremental cursor pagination duplicate rows', connect = connectRemnantRead) {
   const started = performance.now();
-  const connection = await connectRemnantRead();
+  const connection = await connect();
   try {
     const search = readData(await connection.tools.remnant_search_memories.execute({ query, limit: 3 }));
-    const candidate = search.results?.find(item => item.contentAccess?.fullContentAvailable);
+    if (!search || !Array.isArray(search.results)) throw new Error('Unexpected search response; no result inferred.');
+    const candidate = search.results.find(item => item?.contentAccess?.fullContentAvailable);
     if (!candidate) return { status: 'no_public_match', query, search };
+    if (typeof candidate.id !== 'string' || !candidate.id.trim()) throw new Error('Search returned no usable memory ID.');
     const memory = readData(await connection.tools.remnant_inspect_memory.execute({
       memoryId: candidate.id,
       detail: 'evidence',
     }));
+    if (!memory || memory.id !== candidate.id) throw new Error('Inspection response does not match the selected memory ID.');
     return {
       status: 'public_memory_read',
       elapsedMs: Math.round(performance.now() - started),

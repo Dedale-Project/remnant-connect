@@ -24,6 +24,16 @@ The historical root package version 0.1.0-beta.3 belonged to the connection exam
 6. At the reviewed commit, check the [canonical installation guide](DEVELOPER_QUICKSTART.md), SDK guide, package/lockfile and plugin manifests against this version table. Resolve local documentation links and check owned public guide/discovery URLs. Preserve dated compatibility observations and immutable release files; a historical test dependency is not the current package dependency.
 7. Check the linked directories and showcases using [the dated directory review](DIRECTORY_STATUS.md). Record the URL, observation time, source version and any mismatch; cached search excerpts are not fresh page evidence. Mark inaccessible pages or untested install paths UNKNOWN. Prepare a concrete correction draft for external gaps, and request separate authorization before contacting maintainers or changing an external listing. Directory publication is independent of releasing repository documentation.
 
+For adapter or Read contract changes, also run the commands in the
+[adapter compatibility matrix](ADAPTER_COMPATIBILITY.md), including both named
+SDK clients. Update source SHA-256 bindings, corpus identity, observed versions,
+evidence levels and the review date in `schemas/adapter-compatibility-v1.json`.
+A passing source-function or injected-connection fixture does not certify an
+installed framework. Keep unexecuted native hosts, model runs, latest versions and
+remote behavior explicitly UNKNOWN/NOT_RUN. Treat a dependency/contract change or
+an expired review date as requiring review, not as permission for an automatic
+upgrade. Preserve historical observations and immutable archives.
+
 ## Publish a real release
 
 1. Commit the reviewed release files and push the intended default-branch revision after CI passes.

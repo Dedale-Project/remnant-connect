@@ -44,9 +44,8 @@ test('rejects write, unknown, background-task and cursor requests without upstre
   assert.equal(requests.length, 0);
 });
 
-test('fails closed on added, missing, duplicate or no-longer-read-only upstream tools', async t => {
+test('fails closed on missing, duplicate or no-longer-read-only supported tools', async t => {
   const mutations = [
-    tools => [...tools, { ...tools[0], name: 'publish_memory' }],
     tools => tools.slice(1),
     tools => [tools[0], ...tools.slice(0, -1)],
     tools => tools.map((tool, i) => i ? tool : { ...tool, annotations: { ...tool.annotations, readOnlyHint: false } }),

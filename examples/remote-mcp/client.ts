@@ -55,10 +55,14 @@ export async function searchAndInspect(url: URL, query: string, fetcher: typeof 
       if (!tools.some(tool => tool.name === required)) throw new Error(`Remote MCP does not expose ${required}.`);
     }
     const search = toolValue(await client.callTool({ name: "search_memories", arguments: { query, limit: 3 } }));
-    const first = Array.isArray(search.results) ? search.results[0] as { id?: unknown } | undefined : undefined;
-    const inspected = typeof first?.id === "string"
-      ? toolValue(await client.callTool({ name: "inspect_memory", arguments: { memoryId: first.id } }))
-      : null;
+    if (!Array.isArray(search.results)) throw new Error("Unexpected search response; no result inferred.");
+    const first = search.results[0] as { id?: unknown } | undefined;
+    let inspected: Record<string, unknown> | null = null;
+    if (search.results.length) {
+      if (typeof first?.id !== "string" || !first.id.trim()) throw new Error("Search returned no usable memory ID.");
+      inspected = toolValue(await client.callTool({ name: "inspect_memory", arguments: { memoryId: first.id } }));
+      if (inspected.id !== first.id) throw new Error("Inspection response does not match the selected memory ID.");
+    }
     return { tools: tools.map(tool => tool.name), search, inspected };
   } finally {
     try { if (transport.sessionId) await transport.terminateSession(); }

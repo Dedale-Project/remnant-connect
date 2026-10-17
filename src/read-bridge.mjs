@@ -7,8 +7,9 @@ import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { AjvJsonSchemaValidator } from '@modelcontextprotocol/sdk/validation/ajv';
+import { boundedCatalogBody, CATALOG_LIMITS } from './catalog-body.mjs';
 import {
-  CallToolRequestSchema, CallToolResultSchema, ErrorCode, ListToolsRequestSchema, McpError, ResultSchema,
+  CallToolRequestSchema, CallToolResultSchema, ErrorCode, ListToolsRequestSchema, ListToolsResultSchema, McpError, ResultSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 
 export const READ_ENDPOINT = 'https://remnant.dedale-bi.com/mcp/chatgpt';
@@ -18,6 +19,7 @@ export const READ_TOOL_NAMES = Object.freeze([
 ]);
 export const BRIDGE_VERSION = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version;
 export const MAX_RETRY_AFTER_SECONDS = 3600;
+export const READ_SUBSET_CONTRACT = 'remnant-read-subset-v2';
 const MAX_RETRY_AFTER_LENGTH = 128;
 const MAX_RPC_ERROR_BYTES = 16_384;
 const ALLOWED_SOURCES = new Set(['stdio', 'glama', 'operator']);
@@ -59,14 +61,26 @@ export function acquisitionSource(value = 'stdio') {
 
 function checkedCatalog(tools) {
   const names = new Set(tools.map(tool => tool.name));
-  if (tools.length !== READ_TOOL_NAMES.length || names.size !== tools.length
+  const selected = READ_TOOL_NAMES.map(name => tools.find(tool => tool.name === name));
+  if (names.size !== tools.length
       || READ_TOOL_NAMES.some(name => !names.has(name))
-      || tools.some(tool => tool.annotations?.readOnlyHint !== true
+      || selected.some(tool => tool.annotations?.readOnlyHint !== true
         || tool.annotations?.destructiveHint !== false)) {
     throw new BridgeError('UPSTREAM_CATALOG_CHANGED',
       'The upstream Read catalog no longer matches the seven supported read-only tools. Update or review this bridge before continuing.');
   }
-  return tools;
+  try {
+    for (const tool of selected) {
+      // Independent validators avoid cross-tool $id cache collisions. This is
+      // local schema support, not validation of arbitrary future tools.
+      new AjvJsonSchemaValidator().getValidator(tool.inputSchema);
+      if (tool.outputSchema) new AjvJsonSchemaValidator().getValidator(tool.outputSchema);
+    }
+  } catch {
+    throw new BridgeError('UPSTREAM_CATALOG_CHANGED',
+      'A supported Read tool has a schema this bridge cannot compile. Review the bridge before continuing.');
+  }
+  return selected;
 }
 
 function publicError(error, signal) {
@@ -142,6 +156,7 @@ export function createReadBridge({ source = 'stdio', fetchImpl = globalThis.fetc
     const signal = AbortSignal.any([controller.signal, deadline, ...(parentSignal ? [parentSignal] : [])]);
     active.add(controller);
     const client = new Client({ name: 'remnant-read-stdio', version: BRIDGE_VERSION });
+    const catalogBudget = { bytes: 0, failure: undefined };
     const transport = new StreamableHTTPClientTransport(endpoint, {
       requestInit: { redirect: 'error' },
       reconnectionOptions: { maxRetries: 0, initialReconnectionDelay: 1000, maxReconnectionDelay: 1000, reconnectionDelayGrowFactor: 1 },
@@ -182,6 +197,18 @@ export function createReadBridge({ source = 'stdio', fetchImpl = globalThis.fetc
           throw new BridgeError('UPSTREAM_UNAVAILABLE',
             'The hosted Remnant Read service could not complete this request. No automatic retry was made.', details);
         }
+        let method;
+        try { method = JSON.parse(init.body).method; } catch { /* GET/DELETE have no JSON body. */ }
+        // The session GET stream can deliver the matching tools/list response
+        // too. Its notifications consume the same operation budget.
+        if (response.ok && (method === 'tools/list' || init.method === 'GET')) return boundedCatalogBody(response, {
+          signal, budget: catalogBudget,
+          onLimit: () => {
+            catalogBudget.failure = new BridgeError('UPSTREAM_CATALOG_CHANGED',
+              'The upstream Read catalog exceeded its byte budget. No automatic retry was made.');
+            controller.abort();
+          },
+        });
         return response;
       },
     });
@@ -191,20 +218,22 @@ export function createReadBridge({ source = 'stdio', fetchImpl = globalThis.fetc
       await client.connect(transport, options);
       const tools = [];
       const cursors = new Set();
-      let cursor;
+      let cursor, pages = 0;
       do {
-        const page = await client.listTools(cursor ? { cursor } : undefined, options);
+        // listTools() compiles output schemas for every returned tool. Validate
+        // only the protocol envelope here; ignored tools must never be compiled.
+        const page = await client.request({ method: 'tools/list', ...(cursor ? { params: { cursor } } : {}) }, ListToolsResultSchema, options);
+        pages++;
         tools.push(...page.tools);
         cursor = page.nextCursor;
-        if (tools.length > READ_TOOL_NAMES.length || (cursor && (cursors.has(cursor) || cursors.size >= 7))) {
-          throw new BridgeError('UPSTREAM_CATALOG_CHANGED', 'The upstream Read catalog has unexpected tools or pagination. Review the bridge before continuing.');
+        if (tools.length > CATALOG_LIMITS.tools || (cursor && (cursors.has(cursor) || pages >= CATALOG_LIMITS.pages))) {
+          throw new BridgeError('UPSTREAM_CATALOG_CHANGED', 'The upstream Read catalog exceeds its tool/page budget or repeats a cursor. Review the bridge before continuing.');
         }
         if (cursor) cursors.add(cursor);
       } while (cursor);
-      checkedCatalog(tools);
-      return await operation(client, tools, options);
+      return await operation(client, checkedCatalog(tools), options);
     } catch (error) {
-      const safe = publicError(error, signal);
+      const safe = catalogBudget.failure?.publicDetails() ?? publicError(error, signal);
       throw new BridgeError(safe.code, safe.message, safe);
     } finally {
       // DELETE only releases this anonymous MCP session; cleanup never changes a tool result.
@@ -227,7 +256,7 @@ export function createReadBridge({ source = 'stdio', fetchImpl = globalThis.fetc
   server.setRequestHandler(ListToolsRequestSchema, async (request, extra) => {
     if (request.params?.cursor) throw new McpError(ErrorCode.InvalidParams, 'The Read bridge returns all seven tools in one page; omit cursor.');
     try {
-      return await upstream(async (_client, tools) => ({ tools }), extra.signal);
+      return await upstream(async (_client, tools) => ({ tools, _meta: { 'remnant/readSubsetContract': READ_SUBSET_CONTRACT } }), extra.signal);
     } catch (error) {
       throw new McpError(error.rpcCode ?? ErrorCode.InternalError, `${error.code}: ${error.message}`, error.publicDetails());
     }

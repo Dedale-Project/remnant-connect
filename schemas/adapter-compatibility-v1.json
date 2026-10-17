@@ -1,0 +1,339 @@
+{
+  "manifestVersion": "remnant-adapter-compatibility-v1",
+  "observedAt": "2026-10-17",
+  "observationKind": "LOCAL_UNCOMMITTED_CANDIDATE_BOUND_BY_SOURCE_HASHES",
+  "baseCommit": "1c3654224b149d4e24a758708cbe29aa40043848",
+  "readContract": "remnant-read-subset-v2",
+  "corpus": {
+    "path": "test/fixtures/adapter-compatibility-v1.json",
+    "sha256": "659af50d65154ff4585527fef5c16655551f6d49d55d9769754ac94072be3710"
+  },
+  "runtime": {
+    "node": "24.13.0",
+    "python": "3.13.1",
+    "platform": "Windows",
+    "sdkCurrentActual": "1.32.1",
+    "sdkHistoricalActual": "1.30.0",
+    "historicalRole": "named representative; not asserted immediately preceding release"
+  },
+  "frameworks": [
+    {
+      "framework": "LangGraph",
+      "status": "EXPERIMENTAL",
+      "baseCommit": "1c3654224b149d4e24a758708cbe29aa40043848",
+      "source": {
+        "kind": "WORKTREE_SOURCE_SHA256",
+        "files": [
+          {
+            "path": "examples/langgraph-remnant/remnant_read.py",
+            "sha256": "5aefeacd84178e81b94e46af9ddacc6588ca1d5ba50e180b13d08156f4d29de8"
+          }
+        ]
+      },
+      "repositoryPins": {
+        "langgraph": "1.2.12",
+        "langchain-core": "1.6.6",
+        "langgraph-prebuilt": "1.1.0"
+      },
+      "branchPins": null,
+      "historicalObservation": "README: 2026-10-05, Windows/Python3.12.14; native ToolNode read, not a model task.",
+      "installedNativeFramework": "NOT_INSTALLED_IN_TEST_RUNTIME",
+      "latestUpstreamVersion": "UNKNOWN_NOT_QUERIED",
+      "nativeFrameworkExecution": "NOT_RUN",
+      "modelExecution": "NOT_RUN",
+      "remoteExecution": "NOT_RUN_THIS_CHANGE",
+      "localCoverage": {
+        "idsUnicodeIdentity": "SOURCE_FUNCTION_FIXTURE_PASS",
+        "errors": "HTTP_EXCEPTION_FIXTURE_PASS; MCP envelope NOT_APPLICABLE",
+        "cancellation": "NOT_SUPPORTED_SYNCHRONOUS_READER",
+        "emptySearch": "NOT_APPLICABLE_DIRECT_ID_READER"
+      },
+      "maintenanceOwner": "Remnant operator (repository adapter maintenance; no upstream commitment inferred)",
+      "reviewDue": "2026-11-16",
+      "reviewTriggers": [
+        "source hash change",
+        "dependency or Read contract change",
+        "before release",
+        "review date reached"
+      ]
+    },
+    {
+      "framework": "PydanticAI",
+      "status": "EXPERIMENTAL",
+      "baseCommit": "1c3654224b149d4e24a758708cbe29aa40043848",
+      "source": {
+        "kind": "WORKTREE_SOURCE_SHA256",
+        "files": [
+          {
+            "path": "examples/pydantic-remnant/remnant_read.py",
+            "sha256": "541ffa37eb73caf7c843c8490947d2b405d23a0a0856157ba9df8ffea982d599"
+          }
+        ]
+      },
+      "repositoryPins": {
+        "pydantic-ai-slim[mcp]": "2.54.0",
+        "fastmcp-slim[client]": "4.0.10"
+      },
+      "branchPins": null,
+      "historicalObservation": "README: 2026-10-04 native read; 2026-10-09 offline regressions reported. Python3.12.14; MCP2.3.0 reported, not a current root pin.",
+      "installedNativeFramework": "NOT_INSTALLED_IN_TEST_RUNTIME",
+      "latestUpstreamVersion": "UNKNOWN_NOT_QUERIED",
+      "nativeFrameworkExecution": "NOT_RUN",
+      "modelExecution": "NOT_RUN",
+      "remoteExecution": "NOT_RUN_THIS_CHANGE",
+      "localCoverage": {
+        "idsUnicodeIdentity": "ADAPTER_LOGIC_WITH_TOOLSET_DOUBLE_PASS",
+        "errors": "INJECTED_SDK_EXCEPTION_PASS; native isError conversion NOT_RUN",
+        "cancellation": "INJECTED_CANCELLATION_PROPAGATION_PASS; native transport NOT_RUN",
+        "emptySearch": "ADAPTER_LOGIC_WITH_TOOLSET_DOUBLE_PASS"
+      },
+      "maintenanceOwner": "Remnant operator (repository adapter maintenance; no upstream commitment inferred)",
+      "reviewDue": "2026-11-16",
+      "reviewTriggers": [
+        "source hash change",
+        "dependency or Read contract change",
+        "before release",
+        "review date reached"
+      ]
+    },
+    {
+      "framework": "AutoGen",
+      "status": "EXPERIMENTAL",
+      "baseCommit": "1c3654224b149d4e24a758708cbe29aa40043848",
+      "source": {
+        "kind": "WORKTREE_SOURCE_SHA256",
+        "files": [
+          {
+            "path": "examples/autogen-remnant/remnant_read.py",
+            "sha256": "039aeb0bbc6636905d7de4c14e184306003902adcdea92c3dcc69559c4ee89d6"
+          }
+        ]
+      },
+      "repositoryPins": {
+        "autogen-core": "0.7.5",
+        "httpx": "0.28.1",
+        "pydantic": "2.13.5"
+      },
+      "branchPins": null,
+      "historicalObservation": "README: 2026-10-05 native FunctionTool; 2026-10-09 simulated HTTP and CLI regressions, Python3.12.14.",
+      "installedNativeFramework": "NOT_INSTALLED_IN_TEST_RUNTIME",
+      "latestUpstreamVersion": "UNKNOWN_NOT_QUERIED",
+      "nativeFrameworkExecution": "NOT_RUN",
+      "modelExecution": "NOT_RUN",
+      "remoteExecution": "NOT_RUN_THIS_CHANGE",
+      "localCoverage": {
+        "idsUnicodeIdentity": "SOURCE_FUNCTION_FIXTURE_PASS",
+        "errors": "HTTP_EXCEPTION_FIXTURE_PASS; MCP envelope NOT_APPLICABLE",
+        "cancellation": "SOURCE_FUNCTION_AND_TOKEN_DOUBLE_PASS; native CancellationToken NOT_RUN",
+        "emptySearch": "NOT_APPLICABLE_DIRECT_ID_READER"
+      },
+      "maintenanceOwner": "Remnant operator (repository adapter maintenance; no upstream commitment inferred)",
+      "reviewDue": "2026-11-16",
+      "reviewTriggers": [
+        "source hash change",
+        "dependency or Read contract change",
+        "before release",
+        "review date reached"
+      ]
+    },
+    {
+      "framework": "Mastra",
+      "status": "EXPERIMENTAL",
+      "baseCommit": "1c3654224b149d4e24a758708cbe29aa40043848",
+      "source": {
+        "kind": "WORKTREE_SOURCE_SHA256",
+        "files": [
+          {
+            "path": "examples/mastra-remnant/remnant-read.mjs",
+            "sha256": "0dfd5bcdace532d3bba89f35562d7f70339984321fa6d2b9a01b08e81f181e52"
+          }
+        ]
+      },
+      "repositoryPins": {
+        "@mastra/mcp": "2.1.2",
+        "@mastra/core": "1.74.0"
+      },
+      "branchPins": null,
+      "historicalObservation": "README: 2026-10-03 Windows/Node24.13.0 live operator read; not a model or independent-use result.",
+      "installedNativeFramework": "NOT_INSTALLED_IN_TEST_RUNTIME",
+      "latestUpstreamVersion": "UNKNOWN_NOT_QUERIED",
+      "nativeFrameworkExecution": "NOT_RUN",
+      "modelExecution": "NOT_RUN",
+      "remoteExecution": "NOT_RUN_THIS_CHANGE",
+      "localCoverage": {
+        "idsUnicodeIdentity": "ADAPTER_LOGIC_WITH_CONNECTION_DOUBLE_PASS",
+        "errors": "isError_ENVELOPE_AND_MALFORMED_SEARCH_FIXTURE_PASS; native MCPClient NOT_RUN",
+        "cancellation": "INJECTED_CANCELLATION_PROPAGATION_PASS; native transport NOT_RUN",
+        "emptySearch": "ADAPTER_LOGIC_WITH_CONNECTION_DOUBLE_PASS"
+      },
+      "maintenanceOwner": "Remnant operator (repository adapter maintenance; no upstream commitment inferred)",
+      "reviewDue": "2026-11-16",
+      "reviewTriggers": [
+        "source hash change",
+        "dependency or Read contract change",
+        "before release",
+        "review date reached"
+      ]
+    },
+    {
+      "framework": "Agno",
+      "status": "EXPERIMENTAL",
+      "baseCommit": "1c3654224b149d4e24a758708cbe29aa40043848",
+      "source": {
+        "kind": "UNINTEGRATED_BRANCH_SOURCE",
+        "commit": "7a6b07c4fb534f210a351088ef5fab69d0969a4f",
+        "blob": "98c9b00316fa7284a5953e197351df02ffd1076b"
+      },
+      "repositoryPins": null,
+      "branchPins": {
+        "agno": "3.1.2",
+        "mcp": "2.3.0",
+        "httpx2": "2.13.1",
+        "anyio": "4.15.1",
+        "pydantic": "2.14.0"
+      },
+      "historicalObservation": "Branch README: 2026-10-09 Windows/Python3.13.1 operator search/explicit inspection and offline suite; not rerun here.",
+      "installedNativeFramework": "NOT_INSTALLED_IN_TEST_RUNTIME",
+      "latestUpstreamVersion": "UNKNOWN_NOT_QUERIED",
+      "nativeFrameworkExecution": "NOT_RUN",
+      "modelExecution": "NOT_RUN",
+      "remoteExecution": "NOT_RUN_THIS_CHANGE",
+      "localCoverage": {
+        "idsUnicodeIdentity": "NOT_RUN",
+        "errors": "NOT_RUN",
+        "cancellation": "NOT_RUN",
+        "emptySearch": "NOT_RUN"
+      },
+      "maintenanceOwner": "Remnant operator (repository adapter maintenance; no upstream commitment inferred)",
+      "reviewDue": "2026-11-16",
+      "reviewTriggers": [
+        "source hash change",
+        "dependency or Read contract change",
+        "before release",
+        "review date reached"
+      ]
+    },
+    {
+      "framework": "smolagents",
+      "status": "EXPERIMENTAL",
+      "baseCommit": "1c3654224b149d4e24a758708cbe29aa40043848",
+      "source": {
+        "kind": "UNINTEGRATED_BRANCH_SOURCE",
+        "commit": "e6c2c0a72c59b4afa516b807d8fc8a4345496efe",
+        "blob": "ed25ca114af33fe5e1f03175ade2c1f53d80e1a2"
+      },
+      "repositoryPins": null,
+      "branchPins": {
+        "smolagents[mcp]": "1.26.0",
+        "mcpadapt": "0.1.20",
+        "mcp[ws]": "1.30.0",
+        "httpx": "0.28.1"
+      },
+      "historicalObservation": "Branch README: 2026-10-10 offline Python3.12.14/Windows, native MCPClient lifecycle with fake session; no fresh install or live check.",
+      "installedNativeFramework": "NOT_INSTALLED_IN_TEST_RUNTIME",
+      "latestUpstreamVersion": "UNKNOWN_NOT_QUERIED",
+      "nativeFrameworkExecution": "NOT_RUN",
+      "modelExecution": "NOT_RUN",
+      "remoteExecution": "NOT_RUN_THIS_CHANGE",
+      "localCoverage": {
+        "idsUnicodeIdentity": "NOT_RUN",
+        "errors": "NOT_RUN",
+        "cancellation": "NOT_RUN",
+        "emptySearch": "NOT_RUN"
+      },
+      "maintenanceOwner": "Remnant operator (repository adapter maintenance; no upstream commitment inferred)",
+      "reviewDue": "2026-11-16",
+      "reviewTriggers": [
+        "source hash change",
+        "dependency or Read contract change",
+        "before release",
+        "review date reached"
+      ],
+      "privateSeam": {
+        "kind": "MCPAdapt private _adapter.adapter override; stock pin, not a currently integrated Git fork",
+        "owner": "Remnant operator",
+        "exit": "Use a supported upstream public envelope-preserving API only after exact-version common fixtures pass; until then keep source candidate experimental",
+        "upstreamFix": "UNKNOWN"
+      }
+    },
+    {
+      "framework": "Codex",
+      "status": "EXPERIMENTAL",
+      "baseCommit": "1c3654224b149d4e24a758708cbe29aa40043848",
+      "source": {
+        "kind": "WORKTREE_SOURCE_SHA256",
+        "files": [
+          {
+            "path": "src/read-bridge.mjs",
+            "sha256": "e1cc3acecbb5b5306f814754addfc6880deb2beb15c0d2beac327ec45fd76a4a"
+          },
+          {
+            "path": "src/catalog-body.mjs",
+            "sha256": "73320f8250c2288de4eb5ecb27c06875336097472ae6cd7f8148a7bcc5ab07bf"
+          },
+          {
+            "path": "plugins/remnant/.codex-plugin/plugin.json",
+            "sha256": "09d337d3ae8775e77f228d70823a6c62d088fb9c2f097b2e2524966a2991a314"
+          }
+        ]
+      },
+      "repositoryPins": {
+        "plugin": "0.1.8",
+        "integration": "0.2.0",
+        "@modelcontextprotocol/sdk": "1.32.1"
+      },
+      "branchPins": null,
+      "historicalObservation": "Current local003/017/021 contracts verified earlier in this session; named historical SDK1.30.0. Native Codex app/install/model task not established by these fixtures.",
+      "installedNativeFramework": "UNKNOWN",
+      "latestUpstreamVersion": "UNKNOWN_NOT_QUERIED",
+      "nativeFrameworkExecution": "NOT_RUN",
+      "modelExecution": "NOT_RUN",
+      "remoteExecution": "NOT_RUN_THIS_CHANGE",
+      "localCoverage": {
+        "idsUnicodeIdentity": "REAL_SDK_BRIDGE_ID_UNICODE_ROUNDTRIP_PASS; selection identity not interpreted by generic bridge",
+        "errors": "REAL_SDK_BRIDGE_WIRE_PASS",
+        "cancellation": "REAL_SDK_BRIDGE_CANCELLATION_PASS",
+        "emptySearch": "REAL_SDK_BRIDGE_EMPTY_SHAPE_PASS; native host semantics UNKNOWN"
+      },
+      "maintenanceOwner": "Remnant operator (repository adapter maintenance; no upstream commitment inferred)",
+      "reviewDue": "2026-11-16",
+      "reviewTriggers": [
+        "source hash change",
+        "dependency or Read contract change",
+        "before release",
+        "review date reached"
+      ]
+    }
+  ],
+  "auxiliary": {
+    "SDKExample": {
+      "files": [
+        {
+          "path": "examples/remote-mcp/client.ts",
+          "sha256": "eac9fdaaea4a726fab9f6c2cf1a91f1c24df3a719bbc187f369f4dd5443f255c"
+        }
+      ],
+      "coverage": "REAL_SDK_1.32.1_FAKE_HTTP_PASS; IDs/Unicode/isError/wrong identity/empty/malformed; caller cancellation API not provided"
+    },
+    "AgentMind": {
+      "files": [
+        {
+          "path": "examples/agentmind-remnant/remnant_read.py",
+          "sha256": "f9db088fe081647405a3e0187eb59c27d3783ed2276018af9f36f18d151b4974"
+        }
+      ],
+      "coverage": "SOURCE_FUNCTION_FIXTURE_PASS; native framework NOT_RUN; no native cancellation claim",
+      "historicalSourceCommit": "8478c6eed79d891b5537428d039838f4066c8df0"
+    }
+  },
+  "limitations": [
+    "No seven-framework native compatibility claim",
+    "No model, external network, adoption or production observation",
+    "HTTP source functions tested without framework imports/decorators; no registration test",
+    "Mastra connection and Pydantic toolset replaced by inert doubles",
+    "Agno/smolagents candidates remain unintegrated and unexecuted",
+    "Source hashes bind observations; a hash mismatch requires review, not automatic success"
+  ],
+  "rollback": "Revert selected adapter/subset source changes to the pinned prior contract; no migration or remote action; preserve honest limitations and safe errors/no automatic retries.",
+  "sourceHashNormalization": "SHA-256 of UTF-8 text with CRLF normalized to LF; no other content normalization"
+}
