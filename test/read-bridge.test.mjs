@@ -3,72 +3,9 @@ import assert from 'node:assert/strict';
 import { fileURLToPath } from 'node:url';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
-import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { CallToolResultSchema, ErrorCode } from '@modelcontextprotocol/sdk/types.js';
-import { acquisitionSource, BRIDGE_VERSION, createReadBridge, READ_ENDPOINT, READ_TOOL_NAMES } from '../src/read-bridge.mjs';
-
-function catalog() {
-  return READ_TOOL_NAMES.map(name => ({
-    name, title: `Upstream ${name}`, description: `Unmodified upstream contract for ${name}.`,
-    inputSchema: {
-      type: 'object', additionalProperties: false,
-      properties: { query: { type: 'string', description: 'An upstream field.' }, limit: { type: 'integer', default: 5 } },
-      required: ['query', 'limit'],
-    },
-    outputSchema: { type: 'object', properties: { kind: { type: 'string' } }, required: ['kind'] },
-    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
-    _meta: { 'example.com/provenance': { preserved: true } },
-  }));
-}
-
-function json(message, session) {
-  return new Response(JSON.stringify(message), {
-    headers: { 'content-type': 'application/json', ...(session ? { 'mcp-session-id': session } : {}) },
-  });
-}
-
-function fakeUpstream({ tools = catalog(), call = async params => ({ content: [{ type: 'text', text: params.name }], structuredContent: { kind: params.name } }), intercept } = {}) {
-  const requests = [];
-  let sessions = 0;
-  const fetchImpl = async (url, init) => {
-    const headers = new Headers(init.headers);
-    assert.equal(new URL(url).origin + new URL(url).pathname, READ_ENDPOINT);
-    assert.equal(init.redirect, 'error');
-    assert.equal(init.credentials, 'omit');
-    assert.equal(headers.has('authorization'), false);
-    assert.equal(headers.has('cookie'), false);
-    init.signal.throwIfAborted();
-    if (init.method === 'GET') return new Response(null, { status: 405 });
-    if (init.method === 'DELETE') {
-      requests.push({ method: 'DELETE', session: headers.get('mcp-session-id') });
-      return new Response(null, { status: 204 });
-    }
-    const message = JSON.parse(init.body);
-    requests.push({ ...message, session: headers.get('mcp-session-id'), source: new URL(url).searchParams.get('source'), probe: headers.get('x-remnant-probe') });
-    if (intercept) {
-      const response = await intercept(message, init);
-      if (response) return response;
-    }
-    if (message.method === 'initialize') return json({ jsonrpc: '2.0', id: message.id, result: {
-      protocolVersion: message.params.protocolVersion, capabilities: { tools: {} }, serverInfo: { name: 'fake-remnant-read', version: 'test' },
-    } }, `read-session-${++sessions}`);
-    if (message.id === undefined) return new Response(null, { status: 202 });
-    if (message.method === 'tools/list') return json({ jsonrpc: '2.0', id: message.id, result: { tools } });
-    if (message.method === 'tools/call') return json({ jsonrpc: '2.0', id: message.id, result: await call(message.params, init) });
-    throw new Error(`Unexpected upstream method ${message.method}`);
-  };
-  return { fetchImpl, requests };
-}
-
-async function connected(t, fixture = fakeUpstream(), options = {}) {
-  const bridge = createReadBridge({ fetchImpl: fixture.fetchImpl, ...options });
-  const client = new Client({ name: 'offline-read-bridge-test', version: '1.0.0' });
-  const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
-  await bridge.connect(serverTransport);
-  await client.connect(clientTransport);
-  t.after(async () => { await client.close(); await bridge.close(); });
-  return { client, bridge, ...fixture };
-}
+import { acquisitionSource, BRIDGE_VERSION, MAX_RETRY_AFTER_SECONDS, parseRetryAfter } from '../src/read-bridge.mjs';
+import { catalog, json, fakeUpstream, connected } from './fixtures/read-contract-v1.mjs';
 
 test('forwards all seven full upstream definitions without rewriting required defaults', async t => {
   const tools = catalog();
@@ -241,4 +178,94 @@ test('the real stdio executable initializes and refuses writes without network a
   assert.equal(client.getServerVersion().version, BRIDGE_VERSION);
   await assert.rejects(client.callTool({ name: 'publish_memory', arguments: {} }), error => error.code === ErrorCode.InvalidParams);
   assert.equal(stderr, '');
+});
+
+test('Retry-After accepts bounded seconds and canonical HTTP dates, never arbitrary text', () => {
+  const now = Date.parse('2026-10-17T12:00:00Z');
+  for (const [value, expected] of [
+    ['17', 17], ['0', 0], [' 17 ', 17], ['99999999999999999999', MAX_RETRY_AFTER_SECONDS],
+    ['Sat, 17 Oct 2026 12:00:17 GMT', 17], ['Sat, 17 Oct 2026 11:00:00 GMT', 0],
+    ['Sun, 18 Oct 2026 12:00:00 GMT', MAX_RETRY_AFTER_SECONDS],
+    [null, undefined], ['', undefined], ['-1', undefined], ['+17', undefined], ['1.5', undefined],
+    ['1e3', undefined], ['17, 18', undefined], ['9'.repeat(129), undefined], ['private fixture secret', undefined],
+    ['2026-10-17T12:00:17Z', undefined], ['Sun, 17 Oct 2026 12:00:17 GMT', undefined],
+    ['Sat, 17 Oct 2026 25:00:17 GMT', undefined],
+  ]) assert.equal(parseRetryAfter(value, now), expected, String(value));
+});
+
+test('HTTP failures retain safe categories and retry hints without reading or echoing bodies', async t => {
+  for (const [status, code] of [[429, 'UPSTREAM_RATE_LIMITED'], [503, 'UPSTREAM_UNAVAILABLE'],
+    [401, 'UPSTREAM_ACCESS_DENIED'], [403, 'UPSTREAM_ACCESS_DENIED']]) {
+    for (const method of ['tools/call', 'tools/list', 'initialize']) {
+      let cancelled = 0;
+      const fixture = fakeUpstream({ intercept: async message => {
+        if (message.method !== method) return;
+        const response = new Response(new ReadableStream({ cancel() { cancelled++; } }), {
+          status, headers: { 'retry-after': '17', 'www-authenticate': 'Bearer private fixture secret' },
+        });
+        response.text = () => { throw new Error('Error body must never be read'); };
+        return response;
+      } });
+      const { client } = await connected(t, fixture);
+      const result = await client.callTool({ name: 'try_remnant', arguments: {} });
+      assert.equal(result.isError, true);
+      assert.equal(result.structuredContent.code, code);
+      assert.equal(result.structuredContent.httpStatus, status);
+      assert.equal(result.structuredContent.retryAfterSeconds, [429, 503].includes(status) ? 17 : undefined);
+      assert.ok(JSON.stringify(result).length < 700);
+      assert.doesNotMatch(JSON.stringify(result), /private fixture secret|Bearer|Error body/);
+      assert.equal(cancelled, 1);
+      assert.equal(fixture.requests.filter(x => x.method === method).length, 1, 'No retry at any request phase');
+    }
+  }
+});
+
+test('list failures carry safe machine-readable data and JSON-RPC invalid params never echo server messages', async t => {
+  for (const method of ['tools/list', 'tools/call']) {
+    const fixture = fakeUpstream({ intercept: async message => message.method === method
+      ? json({ jsonrpc: '2.0', id: message.id, error: { code: -32602, message: 'private fixture secret', data: { token: 'private fixture secret' } } }) : undefined });
+    const { client } = await connected(t, fixture);
+    if (method === 'tools/list') {
+      await assert.rejects(client.listTools(), error => {
+        assert.equal(error.code, -32602);
+        assert.equal(error.data.code, 'UPSTREAM_INVALID_PARAMS');
+        assert.doesNotMatch(JSON.stringify(error) + error.message, /private fixture secret/);
+        return true;
+      });
+    } else {
+      const result = await client.callTool({ name: 'try_remnant', arguments: {} });
+      assert.equal(result.structuredContent.code, 'UPSTREAM_INVALID_PARAMS');
+      assert.equal(result.structuredContent.rpcCode, -32602);
+      assert.doesNotMatch(JSON.stringify(result), /private fixture secret/);
+    }
+    assert.equal(fixture.requests.filter(x => x.method === method).length, 1);
+  }
+  const fixture = fakeUpstream({ intercept: async message => message.method === 'tools/list'
+    ? new Response('private fixture secret', { status: 429, headers: { 'retry-after': '17' } }) : undefined });
+  const { client } = await connected(t, fixture);
+  await assert.rejects(client.listTools(), error => error.data.code === 'UPSTREAM_RATE_LIMITED' && error.data.retryAfterSeconds === 17);
+});
+
+test('malformed or excessive Retry-After is omitted or clamped and cannot leak between concurrent requests', async t => {
+  const values = ['17', '-7', 'private fixture secret', '9'.repeat(129), '999999999999'];
+  const expected = [17, undefined, undefined, undefined, MAX_RETRY_AFTER_SECONDS];
+  const fixture = fakeUpstream({ intercept: async message => message.method === 'tools/call'
+    ? new Response('private fixture secret', { status: 429, headers: { 'retry-after': values[message.params.arguments.index] } }) : undefined });
+  const { client } = await connected(t, fixture);
+  const results = await Promise.all(values.map((_, index) => client.callTool({ name: 'try_remnant', arguments: { index } })));
+  assert.deepEqual(results.map(result => result.structuredContent.retryAfterSeconds), expected);
+  assert.ok(results.every(result => result.structuredContent.code === 'UPSTREAM_RATE_LIMITED'));
+  assert.doesNotMatch(JSON.stringify(results), /private fixture secret/);
+  assert.equal(fixture.requests.filter(x => x.method === 'tools/call').length, values.length);
+});
+
+test('a timeout during a tool call remains bounded and makes no second call', async t => {
+  const fixture = fakeUpstream({ intercept: async (message, init) => {
+    if (message.method === 'tools/call') await new Promise((_resolve, reject) =>
+      init.signal.addEventListener('abort', () => reject(init.signal.reason), { once: true }));
+  } });
+  const { client } = await connected(t, fixture, { timeoutMs: 100 });
+  const result = await client.callTool({ name: 'try_remnant', arguments: {} });
+  assert.equal(result.structuredContent.code, 'UPSTREAM_TIMEOUT');
+  assert.equal(fixture.requests.filter(x => x.method === 'tools/call').length, 1);
 });

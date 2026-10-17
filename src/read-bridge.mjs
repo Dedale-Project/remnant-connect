@@ -6,8 +6,9 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { AjvJsonSchemaValidator } from '@modelcontextprotocol/sdk/validation/ajv';
 import {
-  CallToolRequestSchema, ErrorCode, ListToolsRequestSchema, McpError,
+  CallToolRequestSchema, CallToolResultSchema, ErrorCode, ListToolsRequestSchema, McpError, ResultSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 
 export const READ_ENDPOINT = 'https://remnant.dedale-bi.com/mcp/chatgpt';
@@ -16,13 +17,36 @@ export const READ_TOOL_NAMES = Object.freeze([
   'inspect_agent', 'get_trust_passport', 'verify_trust_passport',
 ]);
 export const BRIDGE_VERSION = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version;
+export const MAX_RETRY_AFTER_SECONDS = 3600;
+const MAX_RETRY_AFTER_LENGTH = 128;
 const ALLOWED_SOURCES = new Set(['stdio', 'glama', 'operator']);
 const ALLOWED_HEADERS = new Set([
   'accept', 'content-type', 'mcp-protocol-version', 'mcp-session-id', 'last-event-id',
 ]);
 
 class BridgeError extends Error {
-  constructor(code, message) { super(message); this.code = code; }
+  constructor(code, message, details = {}) {
+    super(message); this.code = code;
+    for (const key of ['httpStatus', 'rpcCode', 'retryAfterSeconds']) {
+      if (details[key] !== undefined) this[key] = details[key];
+    }
+  }
+  publicDetails() {
+    return { code: this.code, message: this.message,
+      ...Object.fromEntries(['httpStatus', 'rpcCode', 'retryAfterSeconds']
+        .filter(key => this[key] !== undefined).map(key => [key, this[key]])) };
+  }
+}
+
+/** A bounded hint, never a retry instruction. Accept delta-seconds or canonical HTTP dates. */
+export function parseRetryAfter(value, now = Date.now()) {
+  if (typeof value !== 'string' || value.length > MAX_RETRY_AFTER_LENGTH) return undefined;
+  const text = value.trim();
+  if (/^\d+$/.test(text)) return Math.min(Number(text), MAX_RETRY_AFTER_SECONDS);
+  if (!/^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4} \d{2}:\d{2}:\d{2} GMT$/.test(text)) return undefined;
+  const timestamp = Date.parse(text);
+  if (!Number.isFinite(timestamp) || new Date(timestamp).toUTCString() !== text) return undefined;
+  return Math.min(MAX_RETRY_AFTER_SECONDS, Math.max(0, Math.ceil((timestamp - now) / 1000)));
 }
 
 export function acquisitionSource(value = 'stdio') {
@@ -45,10 +69,14 @@ function checkedCatalog(tools) {
 }
 
 function publicError(error, signal) {
-  if (error instanceof BridgeError) return { code: error.code, message: error.message };
-  if (signal.aborted) return {
-    code: signal.reason?.name === 'TimeoutError' ? 'UPSTREAM_TIMEOUT' : 'REQUEST_CANCELLED',
+  if (signal.aborted || (error instanceof McpError && error.code === ErrorCode.RequestTimeout)) return {
+    code: signal.aborted && signal.reason?.name !== 'TimeoutError' ? 'REQUEST_CANCELLED' : 'UPSTREAM_TIMEOUT',
     message: 'The Remnant Read request timed out or was cancelled. No automatic retry was made.',
+  };
+  if (error instanceof BridgeError) return error.publicDetails();
+  if (error instanceof McpError && error.code === ErrorCode.InvalidParams) return {
+    code: 'UPSTREAM_INVALID_PARAMS', rpcCode: ErrorCode.InvalidParams,
+    message: 'The Remnant Read service rejected the tool parameters. Check the advertised schema before making a new request. No automatic retry was made.',
   };
   return {
     code: 'UPSTREAM_UNAVAILABLE',
@@ -93,11 +121,30 @@ export function createReadBridge({ source = 'stdio', fetchImpl = globalThis.fetc
         }
         // This exact marker is recognized by the hosted service as a diagnostic probe.
         if (source === 'operator') headers.set('x-remnant-probe', 'glama-directory-health');
-        return fetchImpl(endpoint, {
+        const response = await fetchImpl(endpoint, {
           method: init.method, headers, body: init.body,
           credentials: 'omit', redirect: 'error',
           signal: AbortSignal.any([signal, ...(init.signal ? [init.signal] : [])]),
         });
+        // GET/DELETE 405 is a supported stateless-transport response. For other
+        // HTTP failures, discard the body before the SDK can buffer/echo it.
+        if (!response.ok && !(response.status === 405 && ['GET', 'DELETE'].includes(init.method))) {
+          void response.body?.cancel().catch(() => {});
+          const details = { httpStatus: response.status };
+          if (response.status === 429 || response.status === 503) {
+            const retryAfterSeconds = parseRetryAfter(response.headers.get('retry-after'));
+            if (retryAfterSeconds !== undefined) details.retryAfterSeconds = retryAfterSeconds;
+          }
+          if (response.status === 429) throw new BridgeError('UPSTREAM_RATE_LIMITED',
+            'The Remnant Read service rate-limited this request. No automatic retry was made.', details);
+          if (response.status === 401 || response.status === 403) throw new BridgeError('UPSTREAM_ACCESS_DENIED',
+            'The anonymous Remnant Read service refused access. No credentials were sent and no automatic retry was made.', details);
+          if (response.status >= 300 && response.status < 400) throw new BridgeError('UPSTREAM_REDIRECT_REFUSED',
+            'This bridge only connects to the canonical Remnant Read endpoint.', details);
+          throw new BridgeError('UPSTREAM_UNAVAILABLE',
+            'The hosted Remnant Read service could not complete this request. No automatic retry was made.', details);
+        }
+        return response;
       },
     });
     const options = { signal, timeout: timeoutMs, maxTotalTimeout: timeoutMs };
@@ -120,7 +167,7 @@ export function createReadBridge({ source = 'stdio', fetchImpl = globalThis.fetc
       return await operation(client, tools, options);
     } catch (error) {
       const safe = publicError(error, signal);
-      throw new BridgeError(safe.code, safe.message);
+      throw new BridgeError(safe.code, safe.message, safe);
     } finally {
       // DELETE only releases this anonymous MCP session; cleanup never changes a tool result.
       if (transport.sessionId && !signal.aborted) {
@@ -144,7 +191,7 @@ export function createReadBridge({ source = 'stdio', fetchImpl = globalThis.fetc
     try {
       return await upstream(async (_client, tools) => ({ tools }), extra.signal);
     } catch (error) {
-      throw new McpError(ErrorCode.InternalError, `${error.code}: ${error.message}`);
+      throw new McpError(error.rpcCode ?? ErrorCode.InternalError, `${error.code}: ${error.message}`, error.publicDetails());
     }
   });
 
@@ -161,9 +208,28 @@ export function createReadBridge({ source = 'stdio', fetchImpl = globalThis.fetc
       ...(policy === undefined ? {} : { _meta: { 'remnant/contribution': policy } }),
     };
     try {
-      return await upstream((client, _tools, options) => client.callTool(params, undefined, options), extra.signal);
+      return await upstream(async (client, tools, options) => {
+        // Separate wire-level InvalidParams from local output validation: the SDK's
+        // callTool convenience method uses -32602 for both, which would blame input
+        // parameters for a malformed upstream result.
+        const raw = await client.request({ method: 'tools/call', params }, ResultSchema, options);
+        const parsed = CallToolResultSchema.safeParse(raw);
+        const invalid = () => new BridgeError('UPSTREAM_INVALID_RESPONSE',
+          'The Remnant Read service returned a result that does not match its advertised contract. No automatic retry was made.');
+        if (!parsed.success) throw invalid();
+        const result = parsed.data, outputSchema = tools.find(tool => tool.name === params.name)?.outputSchema;
+        if (outputSchema) {
+          if (!result.structuredContent && !result.isError) throw invalid();
+          if (result.structuredContent) {
+            try {
+              if (!new AjvJsonSchemaValidator().getValidator(outputSchema)(result.structuredContent).valid) throw invalid();
+            } catch { throw invalid(); }
+          }
+        }
+        return result;
+      }, extra.signal);
     } catch (error) {
-      const failure = { code: error.code, message: error.message };
+      const failure = error.publicDetails();
       return { isError: true, content: [{ type: 'text', text: `${failure.code}: ${failure.message}` }], structuredContent: failure };
     }
   });
