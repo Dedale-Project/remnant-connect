@@ -5,7 +5,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { runHook, writeHostDecision } from '../examples/codex-close-loop/hook.mjs';
+import { fromCompletionDecision, runHook, writeHostDecision } from '../examples/codex-close-loop/hook.mjs';
+import { CLOSE_LOOP_RESULT_CONTRACT, LEGACY_RECEIPT_BLOCKERS } from '../examples/codex-close-loop/result-contract.mjs';
 
 const event = { hook_event_name: 'Stop', session_id: 'fixture-session', turn_id: 'fixture-turn', stop_hook_active: false };
 test('startup delivers the same versioned instruction and a disabled hook emits no context', async () => {
@@ -49,4 +50,74 @@ test('standalone executable handles malformed input without claiming a completed
   const response = JSON.parse(result.stdout);
   assert.equal(response.decision, undefined);
   assert.match(response.systemMessage, /no completed loop is claimed/);
+});
+
+const currentBlockers = ['UNSAFE', 'OPTED_OUT', 'REMNANT_DISABLED', 'WRITE_UNAVAILABLE', 'READ_UNAVAILABLE',
+  'CONSENT_REQUIRED', 'PUBLIC_NOT_ALLOWED', 'FEEDBACK_NOT_ALLOWED', 'FEEDBACK_AUTHORIZATION_UNVERIFIED'];
+const pendingResults = ['PENDING', 'FAILED', 'UNCONFIRMED_WRITE'];
+const completedResults = ['PUBLISHED', 'NO_REUSABLE_LEARNING', 'DUPLICATE'];
+const completion = (result, ready = true, feedbackResults = {}) => fromCompletionDecision({ ready,
+  state: { contributionResult: result, feedbackResults, blockedReason: null } });
+
+test('the receipt table covers every known shared CloseLoopResult', () => {
+  assert.deepEqual(Object.keys(CLOSE_LOOP_RESULT_CONTRACT).sort(), [...currentBlockers, ...pendingResults, ...completedResults].sort());
+});
+
+test('known terminal blockers, including feedback authorization, persist as accepted blocked receipts', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'remnant-terminal-reasons-'));
+  try {
+    for (const reason of [...currentBlockers, ...LEGACY_RECEIPT_BLOCKERS]) {
+      for (const ready of [true, false]) {
+        for (const location of ['contribution', 'feedback', 'blockedReason']) {
+          const state = { contributionResult: location === 'contribution' ? reason : 'NO_REUSABLE_LEARNING',
+            feedbackResults: location === 'feedback' ? { memory: reason } : {}, blockedReason: location === 'blockedReason' ? reason : null };
+          const decision = fromCompletionDecision({ ready, state });
+          assert.deepEqual(decision, { ready, blocked: true, pendingActions: [], reasonCode: reason });
+          await writeHostDecision({ stateDir: dir, sessionId: event.session_id, turnId: event.turn_id, decision });
+          assert.deepEqual(await runHook(event, { stateDir: dir }), {}, reason);
+          assert.deepEqual(await runHook({ ...event, stop_hook_active: true }, { stateDir: dir }), {});
+        }
+      }
+    }
+  } finally { await rm(dir, { recursive: true, force: true }); }
+});
+
+test('success, pending writes and unrecognized future results cannot be conflated', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'remnant-incomplete-reasons-'));
+  try {
+    const write = decision => writeHostDecision({ stateDir: dir, sessionId: event.session_id, turnId: event.turn_id, decision });
+    for (const result of completedResults) {
+      const decision = completion(result, true, { memory: 'RECORDED' });
+      assert.equal(decision.reasonCode, result === 'PUBLISHED' ? 'COMPLETE' : result);
+      assert.equal(decision.blocked, false);
+      await write(decision);
+      assert.deepEqual(await runHook(event, { stateDir: dir }), {});
+    }
+    for (const result of [...pendingResults, 'FUTURE_BLOCKER']) {
+      for (const ready of [true, false]) {
+        for (const decision of [completion(result, ready), completion('PUBLISHED', ready, { memory: result })]) {
+          assert.equal(decision.ready, false);
+          assert.equal(decision.blocked, false);
+          assert.equal(decision.reasonCode, result === 'FUTURE_BLOCKER' ? 'UNKNOWN_RESULT' : result === 'FAILED' ? 'FAILED' : 'PENDING');
+          await write(decision);
+          assert.equal((await runHook(event, { stateDir: dir })).decision, 'block');
+          assert.equal((await runHook({ ...event, stop_hook_active: true }, { stateDir: dir })).decision, undefined);
+        }
+      }
+    }
+    assert.equal(fromCompletionDecision({ ready: true, state: {} }).reasonCode, 'UNKNOWN_RESULT');
+    for (const decision of [
+      { ready: true, blocked: true, pendingActions: [], reasonCode: 'COMPLETE' },
+      { ready: true, blocked: false, pendingActions: [], reasonCode: 'FEEDBACK_NOT_ALLOWED' },
+      { ready: true, blocked: false, pendingActions: [], reasonCode: 'UNKNOWN_RESULT' },
+    ]) await assert.rejects(write(decision), /Invalid host decision/);
+  } finally { await rm(dir, { recursive: true, force: true }); }
+});
+
+test('optional shared backend source agrees with the versioned receipt contract', { skip: !process.env.REMNANT_CLOSE_LOOP_SOURCE }, async () => {
+  const source = await readFile(process.env.REMNANT_CLOSE_LOOP_SOURCE, 'utf8');
+  const union = source.match(/export type CloseLoopResult\s*=([\s\S]*?);/);
+  assert.ok(union, 'CloseLoopResult must remain an explicit version-reviewed contract');
+  const values = [...union[1].matchAll(/"([A-Z_]+)"/g)].map(match => match[1]);
+  assert.deepEqual(values.sort(), Object.keys(CLOSE_LOOP_RESULT_CONTRACT).sort(), 'Review new backend reasons before using this hook');
 });
