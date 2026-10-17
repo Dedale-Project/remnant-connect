@@ -51,10 +51,16 @@ export async function firstRead(query = 'data ETL incremental cursor pagination 
     }
     const candidate = search.results?.find(item => item.contentAccess?.fullContentAvailable);
     if (!candidate) return { status: 'no_public_match', query, search };
+    if (typeof candidate.id !== 'string' || candidate.id.trim().length === 0) {
+      throw new Error('Invalid search response: readable candidate must have a non-empty ID');
+    }
     const memory = readData(await connection.tools.remnant_inspect_memory.execute({
       memoryId: candidate.id,
       detail: 'evidence',
     }));
+    if (!memory || typeof memory !== 'object' || Array.isArray(memory) || memory.id !== candidate.id) {
+      throw new Error('Invalid inspection response: memory ID does not match the selected candidate');
+    }
     return {
       status: 'public_memory_read',
       elapsedMs: Math.round(performance.now() - started),

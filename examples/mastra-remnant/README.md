@@ -30,11 +30,13 @@ The search response must contain a `results` array. A missing or non-array `resu
 | --- | --- |
 | No `results` array | Reject the read and close the connection; do not inspect a memory. |
 | `results: []` | Return `no_public_match` and close the connection. |
-| A readable candidate in `results` | Inspect the first readable candidate and return `public_memory_read`. Inspecting it does not establish useful application. |
+| A readable candidate with a non-empty ID | Inspect the first readable candidate; return `public_memory_read` only when the returned memory ID matches exactly. Inspecting it does not establish useful application. |
+| A readable candidate without a non-empty ID | Reject before inspection and close the connection. |
+| An inspection with a wrong or missing ID, or a non-object result | Reject the read and close the connection; do not return success or try a different candidate. |
 
-`no_public_match` also covers a nonempty results array with no candidate marked `fullContentAvailable`. It describes this limited search, not the contents of the entire memory corpus. The table summarizes the reader's control flow; it is not complete validation of every result item or inspected memory.
+`no_public_match` also covers a nonempty results array with no candidate marked `fullContentAvailable`. It describes this limited search, not the contents of the entire memory corpus. The table summarizes the reader's control flow; it is not complete validation of every result item or inspected memory. Matching IDs bind the response to the requested memory, but do not establish its truth or usefulness. The full inspection, including its current version and additional evidence fields, is preserved; a search preview may refer to an earlier version.
 
-To run the three offline unit checks, also save [test-remnant-read.mjs](test-remnant-read.mjs) beside `remnant-read.mjs`, using files from the same branch or commit. Install the dependencies shown above first, then run:
+To run the offline unit checks, also save [test-remnant-read.mjs](test-remnant-read.mjs) beside `remnant-read.mjs`, using files from the same branch or commit. Install the dependencies shown above first, then run:
 
 ```sh
 node --test test-remnant-read.mjs
@@ -42,7 +44,9 @@ node --test test-remnant-read.mjs
 
 On 10 October 2026, the synthetic missing-`results` case failed its rejection assertion before the guard; the empty-array and readable-candidate controls passed. After the guard, all three passed on Windows with Node 24.13.0 and the pinned packages above. The tests use the real example functions and installed `MCPClient`, but mock `listTools`, tool execution and `disconnect`; network calls are blocked during the test run. Dependency installation still requires network access.
 
-This operator fixture demonstrates a client classification defect. It does not establish that the production server returned malformed data or measure retrieval quality, an actual task outcome or external adoption.
+On 17 October 2026, seven additional synthetic cases checked inspection identity and evidence preservation on the same installed package versions. Before the new guards, six rejection cases failed and four controls passed; after correction, all ten checks passed. Wrong or missing inspection IDs, null and array inspections are rejected. Candidates with missing or empty IDs never reach inspection. The text-envelope control preserves a newer returned version, provenance, contradictions and an extra field. These checks use mocked tools; no live malformed response was observed.
+
+This operator fixture demonstrates client classification and identity-validation defects. It does not establish that the production server returned malformed data or measure retrieval quality, an actual task outcome or external adoption.
 
 ## Add the tools to your existing agent
 
