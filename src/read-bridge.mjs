@@ -19,6 +19,7 @@ export const READ_TOOL_NAMES = Object.freeze([
 export const BRIDGE_VERSION = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version;
 export const MAX_RETRY_AFTER_SECONDS = 3600;
 const MAX_RETRY_AFTER_LENGTH = 128;
+const MAX_RPC_ERROR_BYTES = 16_384;
 const ALLOWED_SOURCES = new Set(['stdio', 'glama', 'operator']);
 const ALLOWED_HEADERS = new Set([
   'accept', 'content-type', 'mcp-protocol-version', 'mcp-session-id', 'last-event-id',
@@ -84,6 +85,39 @@ function publicError(error, signal) {
   };
 }
 
+// HTTP 400 can carry the protocol's InvalidParams response. Read only a bounded
+// JSON body and return its whitelisted code; server messages/data never escape.
+async function invalidParamsResponse(response, requestBody, signal) {
+  if (response.status !== 400 || !/^application\/json(?:\s*;|$)/i.test(response.headers.get('content-type') ?? '')) return false;
+  const advertised = Number(response.headers.get('content-length'));
+  if (advertised > MAX_RPC_ERROR_BYTES || !response.body) return false;
+  let request;
+  try { request = JSON.parse(requestBody); } catch { return false; }
+  if (!['string', 'number'].includes(typeof request?.id)) return false;
+  const reader = response.body.getReader(), chunks = [];
+  let size = 0;
+  const cancel = () => { void reader.cancel().catch(() => {}); };
+  signal.addEventListener('abort', cancel, { once: true });
+  try {
+    signal.throwIfAborted();
+    for (;;) {
+      const { value, done } = await reader.read();
+      signal.throwIfAborted();
+      if (done) break;
+      size += value.byteLength;
+      if (size > MAX_RPC_ERROR_BYTES) return false;
+      chunks.push(value);
+    }
+    const bytes = new Uint8Array(size);
+    let offset = 0;
+    for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
+    const result = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
+    return result?.jsonrpc === '2.0' && result.id === request.id && !Object.hasOwn(result, 'result')
+      && result.error?.code === ErrorCode.InvalidParams;
+  } catch { signal.throwIfAborted(); return false; }
+  finally { signal.removeEventListener('abort', cancel); cancel(); reader.releaseLock(); }
+}
+
 /** Create a server; fetchImpl and timeoutMs are injection points for offline contract tests. */
 export function createReadBridge({ source = 'stdio', fetchImpl = globalThis.fetch, timeoutMs = 20_000 } = {}) {
   const endpoint = new URL(READ_ENDPOINT);
@@ -129,8 +163,12 @@ export function createReadBridge({ source = 'stdio', fetchImpl = globalThis.fetc
         // GET/DELETE 405 is a supported stateless-transport response. For other
         // HTTP failures, discard the body before the SDK can buffer/echo it.
         if (!response.ok && !(response.status === 405 && ['GET', 'DELETE'].includes(init.method))) {
+          const invalidParams = await invalidParamsResponse(response, init.body, signal);
           void response.body?.cancel().catch(() => {});
           const details = { httpStatus: response.status };
+          if (invalidParams) throw new BridgeError('UPSTREAM_INVALID_PARAMS',
+            'The Remnant Read service rejected the tool parameters. Check the advertised schema before making a new request. No automatic retry was made.',
+            { ...details, rpcCode: ErrorCode.InvalidParams });
           if (response.status === 429 || response.status === 503) {
             const retryAfterSeconds = parseRetryAfter(response.headers.get('retry-after'));
             if (retryAfterSeconds !== undefined) details.retryAfterSeconds = retryAfterSeconds;

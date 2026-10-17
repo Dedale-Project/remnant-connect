@@ -269,3 +269,60 @@ test('a timeout during a tool call remains bounded and makes no second call', as
   assert.equal(result.structuredContent.code, 'UPSTREAM_TIMEOUT');
   assert.equal(fixture.requests.filter(x => x.method === 'tools/call').length, 1);
 });
+
+test('HTTP400 InvalidParams keeps only a bounded matching JSON-RPC code', async t => {
+  for (const method of ['initialize', 'tools/list', 'tools/call']) {
+    const fixture = fakeUpstream({ intercept: async message => message.method === method
+      ? new Response(JSON.stringify({ jsonrpc: '2.0', id: message.id,
+        error: { code: -32602, message: 'private fixture secret', data: { token: 'private fixture secret' } } }),
+        { status: 400, headers: { 'content-type': 'application/json; charset=utf-8' } }) : undefined });
+    const { client } = await connected(t, fixture);
+    const result = await client.callTool({ name: 'try_remnant', arguments: {} });
+    assert.equal(result.isError, true);
+    assert.equal(result.structuredContent.code, 'UPSTREAM_INVALID_PARAMS');
+    assert.equal(result.structuredContent.rpcCode, -32602);
+    assert.equal(result.structuredContent.httpStatus, 400);
+    assert.doesNotMatch(JSON.stringify(result), /private fixture secret|token/);
+    assert.equal(fixture.requests.filter(x => x.method === method).length, 1);
+  }
+});
+
+test('HTTP400 malformed, unrelated and oversized bodies stay generic and bounded', async t => {
+  const variants = [
+    () => 'private fixture secret',
+    () => JSON.stringify({ jsonrpc: '2.0', id: 'wrong-id', error: { code: -32602 } }),
+    message => JSON.stringify({ jsonrpc: '2.0', id: message.id, result: {}, error: { code: -32602 } }),
+    message => JSON.stringify({ jsonrpc: '2.0', id: message.id, error: { code: -32603, message: 'private fixture secret' } }),
+    message => JSON.stringify({ jsonrpc: '2.0', id: message.id, error: { code: -32602, message: 'x'.repeat(16385) } }),
+  ];
+  for (const body of variants) {
+    const fixture = fakeUpstream({ intercept: async message => message.method === 'tools/call'
+      ? new Response(body(message), { status: 400, headers: { 'content-type': 'application/json' } }) : undefined });
+    const { client } = await connected(t, fixture);
+    const result = await client.callTool({ name: 'try_remnant', arguments: {} });
+    assert.equal(result.structuredContent.code, 'UPSTREAM_UNAVAILABLE');
+    assert.equal(result.structuredContent.rpcCode, undefined);
+    assert.ok(JSON.stringify(result).length < 700);
+    assert.doesNotMatch(JSON.stringify(result), /private fixture secret/);
+  }
+  let bytesRead = 0, cancelled = false;
+  const fixture = fakeUpstream({ intercept: async message => message.method === 'tools/call'
+    ? new Response(new ReadableStream({ pull(controller) { bytesRead += 4096; controller.enqueue(new Uint8Array(4096)); },
+      cancel() { cancelled = true; } }), { status: 400, headers: { 'content-type': 'application/json' } }) : undefined });
+  const { client } = await connected(t, fixture);
+  const result = await client.callTool({ name: 'try_remnant', arguments: {} });
+  assert.equal(result.structuredContent.code, 'UPSTREAM_UNAVAILABLE');
+  assert.ok(cancelled); assert.ok(bytesRead <= 24576, 'bounded read plus one stream-prefetched chunk');
+});
+
+test('HTTP400 error-body stall obeys the same total deadline and cancels its stream', async t => {
+  let cancelled = false;
+  const fixture = fakeUpstream({ intercept: async message => message.method === 'tools/call'
+    ? new Response(new ReadableStream({ cancel() { cancelled = true; } }),
+      { status: 400, headers: { 'content-type': 'application/json' } }) : undefined });
+  const { client } = await connected(t, fixture, { timeoutMs: 100 });
+  const started = Date.now(), result = await client.callTool({ name: 'try_remnant', arguments: {} });
+  assert.equal(result.structuredContent.code, 'UPSTREAM_TIMEOUT');
+  assert.ok(cancelled); assert.ok(Date.now() - started < 1000);
+  assert.equal(fixture.requests.filter(x => x.method === 'tools/call').length, 1);
+});
