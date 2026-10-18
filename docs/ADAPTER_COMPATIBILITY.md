@@ -42,6 +42,25 @@ The synchronous LangGraph example has no caller-cancellation API. The SDK exampl
 also does not expose a caller signal. None of these observations certify an agent
 against prompt injection or establish independent adoption/usefulness.
 
+## Targeted bridge replay (2026-10-18)
+
+The original observation above is retained. After the versioned Read profile
+changed the bridge, the Codex row was reviewed against connector commit
+`3642098fddc3571b5cac77c6f3ecfe9578fa37a3`. The replay used the installed SDKs
+1.32.1 and 1.30.0 with synthetic upstream responses: **76 tests passed, none
+failed or skipped**. It covered the default full-v1 bridge, explicit minimal-v2
+resource reading, catalogue/schema refusals, errors, cancellation, ID/Unicode
+round trips and empty results. The applicable SDK/Mastra common-corpus tests
+also ran with their existing doubles.
+
+Only the Codex bridge binding was refreshed; its newly imported
+`src/read-profiles.mjs` is now bound too. The matrix records the command, exact
+source commit, normalized hashes and external replay-log hash in that row's
+`targetedReview`. The six other framework rows and their dated observations were
+not refreshed. No Python, native framework, native Codex host, model or live
+service run is claimed. The public subset contract `remnant-read-subset-v2`
+remains distinct from the opt-in server contract `remnant-public-read-v2`.
+
 ## Reproduce the local scope
 
 ```sh

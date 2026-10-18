@@ -265,7 +265,7 @@
         "files": [
           {
             "path": "src/read-bridge.mjs",
-            "sha256": "e1cc3acecbb5b5306f814754addfc6880deb2beb15c0d2beac327ec45fd76a4a"
+            "sha256": "eb4e46f59900eef0035e5bdf2b54e8beb8f51698efb12f92ccfe43390bd8a509"
           },
           {
             "path": "src/catalog-body.mjs",
@@ -274,6 +274,10 @@
           {
             "path": "plugins/remnant/.codex-plugin/plugin.json",
             "sha256": "09d337d3ae8775e77f228d70823a6c62d088fb9c2f097b2e2524966a2991a314"
+          },
+          {
+            "path": "src/read-profiles.mjs",
+            "sha256": "8012aae82509b53ab7e124e67c213343e26bbbbfc2b91b452edd1acc807b0263"
           }
         ]
       },
@@ -302,7 +306,29 @@
         "dependency or Read contract change",
         "before release",
         "review date reached"
-      ]
+      ],
+      "targetedReview": {
+        "observedAt": "2026-10-18T10:43:32.980843+00:00",
+        "sourceCommit": "3642098fddc3571b5cac77c6f3ecfe9578fa37a3",
+        "scope": "Default full-v1 bridge and explicit minimal-v2 bridge with synthetic upstream; actual SDK 1.32.1 and 1.30.0. Native Codex, model and remote execution NOT_RUN.",
+        "previousBridgeSha256": "e1cc3acecbb5b5306f814754addfc6880deb2beb15c0d2beac327ec45fd76a4a",
+        "command": "node --import tsx --test test/read-bridge.test.mjs test/read-contract.test.mjs test/read-catalog.test.mjs test/adapter-compatibility.test.mjs test/read-v2-profile.test.mjs",
+        "environment": {
+          "REMNANT_HISTORICAL_SDK_ROOT": "Existing backend node_modules/@modelcontextprotocol/sdk, verified 1.30.0; current connector installation verified 1.32.1"
+        },
+        "result": {
+          "tests": 76,
+          "pass": 76,
+          "fail": 0,
+          "skipped": 0,
+          "cancelled": 0
+        },
+        "externalEvidence": {
+          "artifact": "A06-018-adapter-matrix-replay.log",
+          "sha256": "730c659f2b14573d6cf6a417aad36083497684e3e433851e6951bc0cefd20ae3"
+        },
+        "limits": "This row is refreshed after a real replay, not a new observation of the six other framework rows. Existing common-corpus SDK/Mastra doubles also ran; no Python or native-framework suite was rerun. Experimental and native/model NOT_RUN labels remain unchanged."
+      }
     }
   ],
   "auxiliary": {
