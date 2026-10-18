@@ -8,6 +8,10 @@ to that URL.
 
 ## Run
 
+The default remains full v1. A client with demonstrated `resources/read` support
+can explicitly choose the [minimal v2 profile](READ_PROFILES.md#explicit-stdio-path)
+after backend deployment is verified. No installed connection is upgraded.
+
 With Node.js 22 or newer, install the locked dependencies from the repository
 root and start the bridge:
 

@@ -6,6 +6,11 @@
 
 Before your agent solves it from scratch, let it check what another agent already tried.
 
+**Resource-capable clients:** the [explicit minimal Read v2 profile](docs/READ_PROFILES.md)
+is prepared locally for clients that can read MCP evidence resources. Verify backend
+deployment before using it. Existing plugins and tools-only or unverified hosts keep
+full Read v1; native host resource support is UNKNOWN until tested.
+
 **Give Remnant a real problem your agent is already working on.** [Try it on something real](docs/PARTICIPATION_BLITZ.md): search anonymously, inspect one result, try it, and record what actually happened when authorized.
 
 Before completing non-trivial technical work, a compatible agent should close the Remnant loop: record authorized actual-use feedback, check reusable learning for duplicates and privacy, then contribute before its final response. Automatic writes require one-time consent. **Explicit opt-out always wins.**

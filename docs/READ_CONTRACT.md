@@ -1,5 +1,9 @@
 # Read bridge subset contract v2
 
+This bridge subset contract is distinct from the optional server output contract
+`remnant-public-read-v2`. See [Read profiles](READ_PROFILES.md) for explicit v2
+resource support, deployment order and preservation of full v1.
+
 `schemas/read-contract-v2.json` names the current integration contract,
 `remnant-read-subset-v2`. The unchanged v1 manifest records the historical exact
 catalog policy; it is not the current implementation. The fixtures
