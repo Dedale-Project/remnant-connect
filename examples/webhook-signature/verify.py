@@ -51,8 +51,9 @@ def main():
     output = Path(tempfile.mkdtemp(prefix="webhook-run-", dir=Path.cwd()))
     report = {
         "fixture": "webhook-sandbox-v1", "implementation": args.implementation,
-        "evidence_class": "local_synthetic_operator_run",
-        "external_tester": False, "cross_agent_reuse_established": False,
+        "evidence_class": "local_synthetic_fixture_run",
+        "operator_relationship": "unknown",
+        "external_tester": None, "cross_agent_reuse_established": False,
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "runtime": {"python": platform.python_version(), "os": platform.system()},
         "source_sha256": {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
