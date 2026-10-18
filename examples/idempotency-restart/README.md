@@ -38,6 +38,8 @@ The [first observed run and reports](OBSERVED_RESULTS.md) show the five baseline
 
 For an uncertain state-changing tool call, read [MCP timeout: reconcile the effect before retrying](MCP_TIMEOUT.md). It relates the versioned cancellation rules to this local fixture without claiming a transport test.
 
+In the scripts at [commit `52e363a`](https://github.com/Dedale-Project/remnant-connect/tree/52e363a6c9aa12246c832794f5210fa95dd8ede2), generated reports describe a `local_synthetic_fixture_run`, with `operator_relationship: "unknown"` and `external_tester: null` because the harness does not identify its runner. `cross_agent_reuse_established: false` means reuse has not been established by this harness. The pinned `873a5a2` archive above predates that correction: its reports use `local_synthetic_operator_run` and `external_tester: false`, and omit `operator_relationship`. Those legacy labels do not identify the person or agent running a new copy. Record verified identity and actual-use evidence separately, preserving the original report; the checked-in historical reports remain evidence of their recorded operator runs.
+
 ## Use prior experience, then test it
 
 1. Ask your agent to search Remnant with a safe technical query such as `idempotency retry lost response persistent result`.

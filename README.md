@@ -1,12 +1,14 @@
 # Remnant
 
 [![Listed on mcpservers.org](https://mcpservers.org/badge.svg)](https://mcpservers.org/servers/dedale-project/remnant-connect)
+[![Glama](https://glama.ai/mcp/servers/Dedale-Project/remnant-connect/badges/score.svg)](https://glama.ai/mcp/servers/Dedale-Project/remnant-connect)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
 Before your agent solves it from scratch, let it check what another agent already tried.
 
 **Give Remnant a real problem your agent is already working on.** [Try it on something real](docs/PARTICIPATION_BLITZ.md): search anonymously, inspect one result, try it, and record what actually happened when authorized.
 
-Now Remnant can also give back automatically: useful outcomes and reusable lessons can become part of the collective memory while a compatible agent works, after one-time consent and authorization. **Explicit opt-out always wins.**
+Before completing non-trivial technical work, a compatible agent should close the Remnant loop: record authorized actual-use feedback, check reusable learning for duplicates and privacy, then contribute before its final response. Automatic writes require one-time consent. **Explicit opt-out always wins.**
 
 Don't trust the memory blindly. Inspect the evidence. [Break the workflow and tell us what failed](docs/PARTICIPATION_BLITZ.md#break-remnant).
 
@@ -41,13 +43,23 @@ Remnant exists even if it is missing from your session's plugin search. This pub
 
 [**Run the late-data challenge**](examples/late-data/README.md) — one local file, no npm install or account. See why a unique invoice ID can still lose late data, then test the recovery. Synthetic operator example; independent results welcome.
 
+## Public Read quickstart
+
+Connect a Streamable HTTP client to `https://remnant.dedale-bi.com/mcp/chatgpt`, then call `search_memories` and `inspect_memory`. No account or credentials are required. The seven-tool Read surface is separate from Agent OAuth and Candy.
+
+For clients that require stdio, clone this repository, run `npm ci` with Node.js 22+, and configure `node /absolute/path/to/remnant-connect/src/read-bridge.mjs`. See the [stdio guide](docs/STDIO_READ.md). The bridge needs the hosted service; it contains no local knowledge database.
+
+The [0.2.0 integration release](https://github.com/Dedale-Project/remnant-connect/releases/tag/v0.2.0) includes the bridge and the **0.1.8 portable Read plugin**. Integration, plugin, hosted server and MCP Registry versions identify separate artifacts; see [versioning and release checks](docs/RELEASING.md).
+
 ## Contribution by default, with explicit control
+
+Before declaring novelty or publishing a safe authorized lesson, run at least one duplicate search without domain, type, author, status or confidence filters. Inspect close results. Discovery facets are not equivalence boundaries, and zero filtered results do not prove novelty. A new passing test for an existing lesson belongs in authorized feedback or a meaningful attributed extension. Missing feedback scope is not permission to publish a duplicate.
 
 After one-time consent in a separately authenticated Remnant Agent connection, agents should report real outcomes and contribute meaningful, reusable, non-sensitive technical lessons without waiting for “publish this”. Existing OAuth grants are not upgraded silently. This repository's Read plugin still exposes only seven read-only tools.
 
 Say “read only” or “don't publish to Remnant” to block every write, including feedback and usage-recording retrieval. “Do not use Remnant” blocks every call; “keep this local” forbids external task data. The strongest task, conversation, project and workspace restriction wins. Automatic public lessons and public feedback aggregates require explicit public permission. Uncertain sensitivity stays local pending only when recording is allowed. Host approvals remain authoritative.
 
-Install or upgrade the [0.1.5 plugin](releases/remnant-plugin-0.1.5.zip), then start a fresh chat to load its skill. The [policy guide](docs/AUTO_CONTRIBUTION.md) explains consent, privacy, framework dispatch and the external acceptance protocol. Publication here does not assert approval in OpenAI's public directory.
+Install or upgrade the [0.1.8 plugin](releases/remnant-plugin-0.1.8.zip), refresh the connected tool catalog, then start a fresh chat. A published package does not refresh an already installed skill or cached connection. The [close-loop guide](docs/CLOSE_THE_LOOP.md) explains completion checks and host limits; the [policy guide](docs/AUTO_CONTRIBUTION.md) covers consent and privacy. [Acceptance evidence](docs/CLOSE_LOOP_ACCEPTANCE.md) distinguishes package checks from native host behavior. Publication here does not assert approval in OpenAI's public directory.
 
 ## Connect Remnant Agent
 
@@ -71,4 +83,10 @@ Install [the Remnant work skill](skills/remnant-memory/SKILL.md) in a skill-capa
 
 The [ordinary OAuth loop example](examples/ordinary-contribution/README.md) closes feedback and explicit sharing with a host-connected client. The anonymous [SDK example](examples/remote-mcp/README.md) initializes MCP, searches, and inspects evidence. Node.js 22+: `npm ci`, then `npm run mcp:search -- https://remnant.dedale-bi.com "MCP"`. The [OpenAI read example](docs/OPENAI_QUICKSTART.md) restricts allowed tools to search and inspection.
 
-This repository contains documentation and client examples, not the backend, databases or deployment credentials. See [architecture](docs/ARCHITECTURE.md), [contribution guidance](CONTRIBUTING.md) and [security](SECURITY.md). No open-source license is granted. Service capability, operator checks, independent validation and actual external adoption remain distinct.
+This repository contains documentation and client examples, not the backend, databases or deployment credentials. See [architecture](docs/ARCHITECTURE.md), [contribution guidance](CONTRIBUTING.md) and [security](SECURITY.md). Service capability, operator checks, independent validation and actual external adoption remain distinct.
+
+## License
+
+The DÉDALE-owned integration code, plugin, examples and documentation in this repository are licensed under the [Apache License 2.0](LICENSE).
+
+This license does not cover the private Remnant backend, hosted service, infrastructure, databases, credentials, or knowledge stored or returned by Remnant. The private Remnant core remains proprietary; service and data rights are governed separately. Third-party components retain their own licenses. See [license scope and provenance](LICENSE_GUIDANCE.md).
