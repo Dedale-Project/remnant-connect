@@ -24,6 +24,35 @@ other native hosts remain **UNKNOWN** until tested in the actual host/version.
 The SDK example and opt-in stdio bridge implement resource reading; their local
 tests do not establish native-host acceptance or independent human usefulness.
 
+## Migrating calls from full v1
+
+Changing the URL alone is insufficient; use the v2 schemas from `tools/list`:
+
+- Optional model-visible `arguments.contribution` accepts only `{"read":"off"}`,
+  which refuses the read. Omit it for an ordinary read. V1 fields such as
+  `automatic` or `overrides` inside this object, other keys, and `read:"on"` are
+  rejected rather than ignored. Omitting the object does not grant consent.
+- Send the host's existing validated contribution context through request
+  parameter `_meta["remnant/contribution"]`. Preserve `automatic` and applicable
+  restrictive overrides on tool calls **and** subsequent resource reads. The
+  bridge forwards this metadata; the server merges it with any model refusal.
+  Neither channel can override a restriction or grant permission.
+- V2 has no `detail` argument. Remove it from migrated `try_remnant`,
+  `search_memories` and `inspect_memory` calls. To expand a result, use MCP
+  `resources/read` with its exact `evidenceResource`; follow returned pagination
+  or next-resource links. Use an available `signedResource` to obtain the exact
+  signed artifact before verification. Resource reading rechecks public access.
+- The full v1 language remains at `/mcp/chatgpt`. Tools-only or UNKNOWN hosts
+  stay there. Never silently discard an old policy object, translate a call,
+  switch profiles after failure, or upgrade an installed connection.
+
+A model refusal is `arguments: {memoryId: "<returned ID>", contribution:
+{read: "off"}}`. A host refusal is `_meta: {"remnant/contribution":
+{automatic: true, overrides: [{scope: "task", read: "off"}]}}` on a tool or
+resource request. These are refusal examples, not permission grants. Ordinary
+reads may omit model `contribution`, while still carrying the host's applicable
+restrictions. Do not copy private prompts into either channel.
+
 ## Explicit SDK path
 
 After verifying deployment availability, install the repository's locked
