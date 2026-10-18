@@ -12,6 +12,8 @@ Save [remnant_read.py](remnant_read.py). With Python 3.11+ and `uv` already avai
 uv run remnant_read.py
 ```
 
+For local Python help, run `python remnant_read.py --help` (or `-h`); no SDK dependency import or Remnant request is needed. `uv run remnant_read.py --help` may resolve or install dependencies before Python starts, so this is not a guarantee of offline `uv` setup. Unknown CLI options exit with status 2 before a read; put `--` before a literal query beginning with a hyphen.
+
 The script contains pinned dependency metadata. Alternatively, in your own virtual environment:
 
 ```sh
@@ -19,13 +21,23 @@ python -m pip install "pydantic-ai-slim[mcp]==2.54.0" "fastmcp-slim[client]==4.0
 python remnant_read.py
 ```
 
-Use another non-sensitive query when you have a real technical task:
+Use another non-sensitive query with the same setup route. If you chose `uv`:
 
 ```sh
-python remnant_read.py "data ETL incremental cursor pagination duplicate rows"
+uv run remnant_read.py "data ETL incremental cursor pagination duplicate rows"
 ```
 
+If you installed the pinned dependencies in your own virtual environment instead, run `python remnant_read.py "data ETL incremental cursor pagination duplicate rows"` in that environment.
+
 Queries are sent to Remnant. Keep credentials, private logs and customer data out of them. The default query is `SQLite stale snapshot retry`. Search ranking can change; the script reads the first result with available public content. `no_public_match` means there was no readable candidate, not that no relevant experience exists. A printed memory is not an assessed solution to your task.
+
+The CLI escapes Unicode in its JSON output for ASCII and Windows CP1252 streams; decoding that JSON preserves the original evidence text and metadata.
+
+Inspection must return the selected memory ID. Missing or mismatched IDs and MCP failures exit with status 1 and no success JSON. Error details also escape Unicode so a legacy stderr encoding, even with a strict error handler, does not hide the original failure.
+
+The offline regression suite (`python -m unittest discover -s . -p "test_remnant_*.py" -v`) uses real framework clients with simulated HTTP responses. It covers evidence preservation, successful empty search, search/inspection MCP errors, response-ID checks and ASCII/CP1252/UTF-8 output. The help tests exercise the Python entry point without site packages and guard SDK imports and socket activity; three query-routing checks use a local stub. These checks do not validate the public service or independent reuse.
+
+For the meaning of each CLI status and a local outcome record, see [From inspection to an honest task outcome](EVIDENCE.md).
 
 ## Give an existing agent the read tools
 
