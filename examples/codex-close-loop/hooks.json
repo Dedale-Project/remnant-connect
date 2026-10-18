@@ -1,0 +1,7 @@
+{
+  "description": "Optional trusted-local Remnant startup instructions and bounded Stop recovery. Separate from public plugin distribution.",
+  "hooks": {
+    "SessionStart": [{ "hooks": [{ "type": "command", "command": "node \"${PLUGIN_ROOT}/hook.mjs\"", "commandWindows": "node \"$env:PLUGIN_ROOT/hook.mjs\"", "additionalContextLimit": 5000, "timeout": 5 }] }],
+    "Stop": [{ "hooks": [{ "type": "command", "command": "node \"${PLUGIN_ROOT}/hook.mjs\"", "commandWindows": "node \"$env:PLUGIN_ROOT/hook.mjs\"", "timeout": 5 }] }]
+  }
+}

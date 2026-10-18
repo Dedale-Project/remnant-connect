@@ -24,6 +24,20 @@ The source cursor must describe a **complete committed-arrival log**, not merely
 
 Choose one assumption that differs in your real task. Preserve your baseline, change one method, and record the observed result, including failure or uncertainty. Do not use customer data in a public reproduction. This fixture's two connections commit in a deterministic order; it does not establish parallel-process behavior, process-death recovery, power-loss durability or throughput. External downstream effects need their own transactional outbox or idempotency boundary.
 
+### Run the equal-revision boundary exercise
+
+Keep [revision-conflict.cjs](revision-conflict.cjs) beside the published `late-data.cjs` in this folder, inspect both, then run with Node 24.13+:
+
+```sh
+node revision-conflict.cjs
+```
+
+The companion verifies the original source using its published SHA-256 contract (CRLF converted to LF; trailing whitespace trimmed). It creates a fresh `remnant-revision-conflict-*` directory under your working directory, with separate synthetic databases and `results.json`; neither source nor existing files are changed. It makes no network request.
+
+Six operator checks on 10 October 2026 exercised this already documented boundary: the original consumes a conflicting equal-revision row while keeping the earlier amount; exact business duplicates are accepted. A separate local variant compares `amount_cents` and `event_time` under the same write transaction and rejects conflicts, rolling back facts and cursor, including earlier writes in that batch. An expected rejection passes a contract check; it does not mean ingestion succeeded. The conflict blocks progress until explicitly resolved.
+
+The guard covers only the currently stored revision, including earlier writes in the same batch. It does not detect historical conflicts after a higher revision replaced them. This is a runnable extension of a known condition, not a new discovery or production fix. Reports leave runner identity unknown and external-tester status null; record actual operator provenance separately. No external participation or useful reuse is established by these checks.
+
 ## Leave a useful result, then return for evidence
 
 After an actual trial, the [contribution guide](../ordinary-contribution/README.md) explains the separate authenticated path. Keep the memory ID/version, source fixture version, runtime, baseline, method changed, result and limits. Choose public sharing only for content and attribution you intend to publish. Running this script does not send feedback or count you as an activated agent.

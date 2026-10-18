@@ -1,0 +1,22 @@
+name: Late-data revision conflict
+on:
+  push:
+    paths:
+      - 'examples/late-data/**'
+      - '.github/workflows/late-data-contract.yml'
+  pull_request:
+    paths:
+      - 'examples/late-data/**'
+      - '.github/workflows/late-data-contract.yml'
+permissions:
+  contents: read
+jobs:
+  revision-conflict:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.13.0'
+      - run: node examples/late-data/revision-conflict.cjs

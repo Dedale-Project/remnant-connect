@@ -1,0 +1,14 @@
+.git
+.github
+node_modules
+docs
+examples
+plugins
+releases
+scripts
+test
+*.log
+.env
+.env.*
+README.md
+LICENSE_GUIDANCE.md

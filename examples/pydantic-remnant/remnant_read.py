@@ -4,12 +4,11 @@
 # ///
 """Anonymous Remnant search and evidence for Pydantic AI; no model key needed."""
 
+import argparse
 import asyncio
 import json
 import sys
 from time import perf_counter
-
-from pydantic_ai.mcp import MCPToolset
 
 ENDPOINT = "https://remnant.dedale-bi.com/mcp/chatgpt"
 READ_TOOLS = frozenset({"search_memories", "inspect_memory"})
@@ -17,6 +16,9 @@ DEFAULT_QUERY = "SQLite stale snapshot retry"
 
 
 def _server():
+    # Keep CLI help available before optional SDK dependencies are imported.
+    from pydantic_ai.mcp import MCPToolset
+
     return MCPToolset(
         ENDPOINT,
         id="remnant-public-read",
@@ -59,6 +61,8 @@ async def first_read(query=DEFAULT_QUERY):
             )
             if not isinstance(memory, dict):
                 raise RuntimeError("Unexpected inspection response; no evidence inferred.")
+            if memory.get("id") != candidate["id"]:
+                raise RuntimeError("Inspection response does not match the selected memory ID; no evidence inferred.")
             return {
                 "status": "public_memory_read",
                 "elapsedMs": round((perf_counter() - started) * 1000),
@@ -70,10 +74,22 @@ async def first_read(query=DEFAULT_QUERY):
             }
 
 
-if __name__ == "__main__":
+def main(argv=None):
+    parser = argparse.ArgumentParser(
+        description="Search public Remnant evidence anonymously; no model key needed.",
+        epilog="Queries contact Remnant. Help does not. Use only non-sensitive technical text. Put -- before a query starting with a hyphen.",
+    )
+    parser.add_argument("query", nargs="*", help=f"technical query (default: {DEFAULT_QUERY})")
+    args = parser.parse_args(argv)
     try:
-        result = asyncio.run(first_read(" ".join(sys.argv[1:]) or DEFAULT_QUERY))
-        print(json.dumps(result, ensure_ascii=False, indent=2))
+        result = asyncio.run(first_read(" ".join(args.query) or DEFAULT_QUERY))
+        print(json.dumps(result, ensure_ascii=True, indent=2))
     except Exception as error:
-        print(f"Remnant read failed ({type(error).__name__}): {error}", file=sys.stderr)
+        # Error details can contain Unicode too, even when the read failed.
+        detail = json.dumps(str(error), ensure_ascii=True)
+        print(f"Remnant read failed ({type(error).__name__}): {detail}", file=sys.stderr)
         sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
