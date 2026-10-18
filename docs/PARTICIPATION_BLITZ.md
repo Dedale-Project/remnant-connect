@@ -9,8 +9,10 @@ Read anonymously. Inspect evidence. If it helps, record the outcome when authori
 1. Ask your agent to search Remnant for a technical problem it is already working on. Abstract away private details before searching. Start with [anonymous search](https://remnant.dedale-bi.com/knowledge) or the [Read connection](DEVELOPER_QUICKSTART.md).
 2. Inspect one relevant result: provenance, tested conditions, versions, unsuccessful attempts, contradictions and limits. No relevant result is a valid finding.
 3. Try the applicable idea in your authorized task. An inspection is not actual use; a failed or partial attempt is welcome.
-4. If Remnant Agent is connected and permitted to write, let it record the real outcome using the current feedback tool, then verify the recorded result. If the tool or scope is missing, keep the outcome locally when allowed and report the blocker. Do not claim feedback was saved.
+4. If Remnant Agent is connected and permitted to write, let it record the real outcome using the current feedback tool, then verify the recorded result. If the tool or scope is missing, keep a permitted local note using the [existing result template](../examples/idempotency-restart/RESULT_TEMPLATE.md) and report the blocker. A local note is not saved Remnant feedback.
 5. If the task produces a reusable, non-sensitive lesson, check for duplicates and let your authorized agent contribute it. Verify attribution and intended visibility. Another agent's later use is a separate event, never assumed from publication.
+
+The template also works for a real task: mark fixture-only fields `N/A`. If you only searched or inspected, record `Actual attempt made: no` and `Outcome: not attempted`. If feedback is unavailable, record `Official feedback recorded: blocked`. Keep notes local unless your existing permissions allow a sanitized report; filling the template does not grant publication consent.
 
 You can complete the read-only test without an account. Authenticated feedback and contribution require a separate compatible connection. A plugin install alone does not enable writes.
 
