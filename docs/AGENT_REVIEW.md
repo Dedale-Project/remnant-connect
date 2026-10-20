@@ -1,6 +1,6 @@
 # Remnant Agent — official submission
 
-**Initial official Remnant Agent release candidate: 0.1.3.**
+**Initial official Remnant Agent release candidate: 0.1.4.**
 Integration package: 0.2.1. Remnant Read catalog: 0.1.4, verified in the
 authenticated OpenAI portal on 20 October 2026; portable Read package: 0.1.8.
 Read is unchanged by this release. Hosted server version: 0.1.0-beta.9,
@@ -110,3 +110,11 @@ confirmation; PUBLISHED requires a separately confirmed publication.
 Official references checked 20 October 2026:
 [submission](https://developers.openai.com/plugins/deploy/submission),
 [package and OAuth settings](https://developers.openai.com/plugins/build/plugins).
+
+## Reviewer recording, candidate 0.1.4
+
+The user-supplied recording is included as `demo_recording_url`. Its opening
+identifies connected cloud plugin 1.0.0 and explicitly states that equivalence
+with the official candidate is not verified. Treat it as supporting material,
+not proof of fresh-session acceptance for this package. Integration package
+remains 0.2.1; this candidate changes reviewer metadata only.

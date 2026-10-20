@@ -38,3 +38,9 @@ Add consented automatic contribution with explicit task, session, project and wo
 - Optional local host adapter with enum-only telemetry and OAuth pending-action
   tests. Deterministic tests do not establish spontaneous ChatGPT behavior.
 - Remnant Read portable 0.1.8 and catalog 0.1.4 remain unchanged.
+
+## Remnant Agent 0.1.4 - reviewer recording
+
+- Add the supplied review video URL; no tool, scope, server or Read changes.
+- Document that the recording does not establish official-package equivalence.
+- Integration package remains 0.2.1.
