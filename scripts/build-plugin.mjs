@@ -4,8 +4,11 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 
 const root = new URL('../', import.meta.url);
 const path = relative => new URL(relative, root);
-const plugin = JSON.parse(readFileSync(path('plugins/remnant/plugin.json'), 'utf8'));
-const compat = JSON.parse(readFileSync(path('plugins/remnant/.codex-plugin/plugin.json'), 'utf8'));
+const target = process.argv[2] ?? 'remnant';
+assert.ok(['remnant', 'remnant-agent'].includes(target), 'Unknown plugin target.');
+const pluginRoot = `plugins/${target}/`;
+const plugin = JSON.parse(readFileSync(path(pluginRoot + 'plugin.json'), 'utf8'));
+const compat = JSON.parse(readFileSync(path(pluginRoot + '.codex-plugin/plugin.json'), 'utf8'));
 assert.match(plugin.version, /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/);
 assert.equal(plugin.version, compat.version, 'Bump both plugin manifests together.');
 
@@ -13,11 +16,11 @@ assert.equal(plugin.version, compat.version, 'Bump both plugin manifests togethe
 for (const name of ['LICENSE', 'LICENSE_GUIDANCE.md']) {
   const bytes = readFileSync(path(name));
   assert.ok(!bytes.includes(Buffer.from('\r\n')), `${name} must use the committed LF line endings.`);
-  writeFileSync(path(`plugins/remnant/${name}`), bytes);
+  writeFileSync(path(`${pluginRoot}${name}`), bytes);
 }
 
 function listFiles(relative = '') {
-  return readdirSync(path(`plugins/remnant/${relative}`), { withFileTypes: true }).flatMap(entry => {
+  return readdirSync(path(`${pluginRoot}${relative}`), { withFileTypes: true }).flatMap(entry => {
     assert.ok(!entry.isSymbolicLink(), 'Portable package must not contain symlinks.');
     const name = relative + entry.name;
     if (entry.isDirectory()) return listFiles(name + '/');
@@ -46,7 +49,7 @@ const localParts = [], centralParts = [];
 let offset = 0;
 for (const file of files) {
   const name = Buffer.from(file, 'utf8');
-  const bytes = readFileSync(path(`plugins/remnant/${file}`));
+  const bytes = readFileSync(path(`${pluginRoot}${file}`));
   assert.ok(bytes.length < 0xffffffff && name.length < 0xffff);
   const crc = crc32(bytes);
   const local = Buffer.alloc(30);
@@ -84,7 +87,7 @@ end.writeUInt16LE(files.length, 10);
 end.writeUInt32LE(centralDirectory.length, 12);
 end.writeUInt32LE(offset, 16);
 const archive = Buffer.concat([...localParts, centralDirectory, end]);
-const archiveName = `remnant-plugin-${plugin.version}.zip`;
+const archiveName = `${target}-plugin-${plugin.version}.zip`;
 const checksum = `${createHash('sha256').update(archive).digest('hex')}  ${archiveName}\n`;
 mkdirSync(path('releases/'), { recursive: true });
 for (const [name, bytes] of [[archiveName, archive], [archiveName.replace(/\.zip$/, '.sha256'), Buffer.from(checksum)]]) {

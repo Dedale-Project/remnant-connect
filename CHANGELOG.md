@@ -29,3 +29,12 @@ Move the completion rule earlier in the skill and enable automatic activation fo
 ## Plugin 0.1.5 — 2026-10-09
 
 Add consented automatic contribution with explicit task, session, project and workspace opt-outs; keep the public plugin read-only. [Archive](releases/remnant-plugin-0.1.5.zip).
+## 0.2.1 — Official Remnant Agent contribution loop
+
+- Initial official Remnant Agent release candidate 0.1.3: persistent OAuth identity,
+  search, retrieval, publication, feedback and evidence inspection.
+- Ask-by-default contribution skill, exact preview/audience approval, duplicate
+  checks, actual-use feedback priority and explicit private-reasoning exclusion.
+- Optional local host adapter with enum-only telemetry and OAuth pending-action
+  tests. Deterministic tests do not establish spontaneous ChatGPT behavior.
+- Remnant Read portable 0.1.8 and catalog 0.1.4 remain unchanged.
