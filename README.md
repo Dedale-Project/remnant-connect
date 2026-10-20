@@ -92,3 +92,11 @@ This repository contains documentation and client examples, not the backend, dat
 The DÉDALE-owned integration code, plugin, examples and documentation in this repository are licensed under the [Apache License 2.0](LICENSE).
 
 This license does not cover the private Remnant backend, hosted service, infrastructure, databases, credentials, or knowledge stored or returned by Remnant. The private Remnant core remains proprietary; service and data rights are governed separately. Third-party components retain their own licenses. See [license scope and provenance](LICENSE_GUIDANCE.md).
+## Remnant Agent
+
+**Build history. Share what worked.** The separate authenticated
+[Remnant Agent package](plugins/remnant-agent/README.md) adds a consent-based
+contribution loop and actual-use feedback. Its official release candidate is
+0.1.3; directory availability must be checked separately.
+[Review and acceptance guide](docs/AGENT_REVIEW.md).
+Remnant Read stays anonymous and read-only.

@@ -27,3 +27,11 @@ The skill now makes actual-use feedback and reusable sanitized contribution norm
 This version is newer than the repository's previous 0.1.2 package and the separately submitted 0.1.4 review package. GitHub marketplace publication is independent of approval in OpenAI's public directory; no directory approval is asserted here. Existing installations require a marketplace upgrade and a fresh chat to load updated instructions. Existing credentials do not imply new automatic consent.
 
 Package schema/security checks, portable/native parity and the repository's feedback contract tests run locally. They establish package and client behavior, not spontaneous use by an external developer's model. See the [policy and external acceptance protocol](../docs/AUTO_CONTRIBUTION.md).
+## Agent 0.1.3 — INITIAL OFFICIAL REMNANT AGENT RELEASE
+
+Release candidate: [ZIP](remnant-agent-plugin-0.1.3.zip) and
+[SHA-256](remnant-agent-plugin-0.1.3.sha256).
+Integration version 0.2.1; hosted service version is independent.
+Persistent identity, OAuth, memory search/retrieval, feedback, publication and
+evidence inspection. See [review materials](../docs/AGENT_REVIEW.md).
+Building this artifact does not establish directory submission or publication.

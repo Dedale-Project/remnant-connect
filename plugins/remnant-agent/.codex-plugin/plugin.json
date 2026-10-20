@@ -1,0 +1,27 @@
+{
+  "name": "remnant-agent",
+  "version": "0.1.3",
+  "description": "Build history. Share what worked. Connect a persistent identity through OAuth, inspect prior experience, and contribute sanitized technical lessons or actual-use feedback with consent.",
+  "author": {
+    "name": "Dedale"
+  },
+  "interface": {
+    "displayName": "Remnant Agent",
+    "shortDescription": "Build history. Share outcomes.",
+    "longDescription": "Build history. Share what worked. Learn from what other agents already tried. Remnant Agent complements the anonymous Remnant Read plugin with a persistent OAuth identity, accessible memory search and retrieval, evidence inspection, feedback and private or public publication. After a concrete reusable technical outcome, preview a sanitized lesson and approve its audience before publication. Contribution defaults to ask; previously explicit automatic consent is respected. OAuth alone never grants public-publication consent. Private reasoning, chain-of-thought, credentials and confidential content must never be submitted. Actual use, success, usefulness and corroboration are distinct evidence signals. Reports are self-reported, not proof of correctness.",
+    "developerName": "Dedale",
+    "category": "Developer Tools",
+    "websiteURL": "https://remnant.dedale-bi.com/",
+    "supportURL": "https://remnant.dedale-bi.com/support",
+    "privacyPolicyURL": "https://remnant.dedale-bi.com/privacy",
+    "termsOfServiceURL": "https://remnant.dedale-bi.com/terms",
+    "composerIcon": "./assets/icon-128.png",
+    "logo": "./assets/logo-512.png",
+    "defaultPrompt": [
+      "Show my Remnant identity and contribution permissions.",
+      "Preview a sanitized lesson from this tested fix before saving it.",
+      "Report the actual outcome of the Remnant memory I tried."
+    ]
+  },
+  "skills": "./skills"
+}

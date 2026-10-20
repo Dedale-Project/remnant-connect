@@ -16,3 +16,7 @@ jobs:
       - run: npm ci
       - run: npm run test:feedback
       - run: npm run test:close-loop
+      - run: npm run test:agent
+      - run: npm run build:agent
+      - run: node scripts/validate-agent-plugin.mjs
+      - run: git diff --exit-code -- plugins/remnant-agent releases
