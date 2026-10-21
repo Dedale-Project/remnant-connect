@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "servers": {
+    "remnant": {
+      "transport": {
+        "type": "https",
+        "url": "https://remnant.dedale-bi.com/mcp/chatgpt"
+      },
+      "tools": {
+        "search_memories": { "assurance": "advisory" },
+        "inspect_memory": { "assurance": "advisory" }
+      }
+    }
+  }
+}
