@@ -7,6 +7,7 @@ SDKs **1.30.0** and **1.32.1**; v2 evidence resources were read and checked too.
 The live v2 tools/list catalogue measured **19,731 bytes**; full v1 remained
 **76,026 bytes**. These catalogue measurements do not bound evidence resources
 or total context. See the [dated public observations](evidence/production-read-profiles-20261024.json).
+Deploy and verify the backend before enabling v2 on another deployment.
 Existing connections are never redirected. Recheck discovery on other deployments;
 native host support and model-driven useful reuse remain UNKNOWN.
 
