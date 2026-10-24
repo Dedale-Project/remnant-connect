@@ -32,6 +32,8 @@ jobs:
           REMNANT_HISTORICAL_SDK_ROOT: ${{ runner.temp }}/remnant-historical-sdk/node_modules/@modelcontextprotocol/sdk
         run: npm run test:read-contract
       - run: npm run test:feedback
+      - run: node --import tsx --test examples/remote-mcp/test_client_evidence.ts
+      - run: node --import tsx --test examples/remote-mcp/test_search_guard.ts
       - run: npm run test:close-loop
       - name: Reproduce the committed portable archive
         run: |

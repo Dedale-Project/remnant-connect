@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 const root = new URL('../', import.meta.url);
 const read = path => JSON.parse(readFileSync(new URL(path, root), 'utf8'));
-const manifest = read('schemas/adapter-compatibility-v1.json');
+const manifest = read('schemas/adapter-compatibility-v2.json');
 
 test('matrix contains exactly seven honest framework rows and explicit native/model gaps', () => {
   assert.deepEqual(manifest.frameworks.map(row => row.framework),
@@ -19,7 +19,8 @@ test('matrix contains exactly seven honest framework rows and explicit native/mo
     assert.ok(row.historicalObservation);
   }
   const smol = manifest.frameworks.find(row => row.framework === 'smolagents');
-  assert.equal(smol.source.kind, 'UNINTEGRATED_BRANCH_SOURCE');
+  assert.equal(smol.source.kind, 'INTEGRATED_SOURCE_IDENTIFIED_NOT_EVALUATED');
+  assert.equal(smol.priorSource.kind, 'UNINTEGRATED_BRANCH_SOURCE');
   assert.ok(smol.privateSeam.owner && smol.privateSeam.exit);
   assert.equal(smol.privateSeam.upstreamFix, 'UNKNOWN');
 });
@@ -43,4 +44,12 @@ test('common corpus and v2 subset retain explicit semantics without rewriting th
   assert.deepEqual(corpus.emptySearch.results, []);
   assert.equal(read('schemas/read-contract-v1.json').contractVersion, 'remnant-read-bridge-v1');
   assert.equal(read('schemas/read-contract-v2.json').contractVersion, manifest.readContract);
+});
+
+// Current source reviews must never rewrite their historical evidence.
+test('current integration matrix retains the exact historical observation', () => {
+  const previous=readFileSync(new URL(manifest.priorManifest.path,root));
+  assert.equal(createHash('sha256').update(previous).digest('hex'),manifest.priorManifest.sha256);
+  assert.equal(JSON.parse(previous).manifestVersion,'remnant-adapter-compatibility-v1');
+  assert.equal(manifest.manifestVersion,'remnant-adapter-compatibility-v2');
 });

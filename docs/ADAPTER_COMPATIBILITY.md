@@ -1,5 +1,13 @@
 # Adapter compatibility evidence
 
+## Current integration review — 24 October 2026
+
+The [current v2 matrix](../schemas/adapter-compatibility-v2.json) binds the merged Council and public-main source bytes. The original v1 matrix below remains byte-for-byte historical evidence. Seven dependency-free Python source-function tests passed on the integrated readers; Node connection-double and actual installed SDK fixtures cover the selecting readers and bridge. These runs do not establish native framework registration, native host support, model behavior or independent useful reuse.
+
+Agno and smolagents source is now integrated in public main. Their v2 rows identify and hash that source but mark execution NOT_RUN in this review. Earlier branch observations are retained under priorSource; the historical table below does not describe current source availability. Repository pins remain declarations, not fresh installation observations.
+
+## Historical observation — 17 October 2026
+
 The observation on **2026-10-17** covers a local candidate based on integration
 commit `1c3654224b149d4e24a758708cbe29aa40043848`. The machine-readable
 [matrix](../schemas/adapter-compatibility-v1.json) binds each followed adapter to

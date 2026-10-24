@@ -46,15 +46,21 @@ export async function firstRead(query = 'data ETL incremental cursor pagination 
   const connection = await connect();
   try {
     const search = readData(await connection.tools.remnant_search_memories.execute({ query, limit: 3 }));
-    if (!search || !Array.isArray(search.results)) throw new Error('Unexpected search response; no result inferred.');
-    const candidate = search.results.find(item => item?.contentAccess?.fullContentAvailable);
+    if (!search || typeof search !== 'object' || !Array.isArray(search.results)) {
+      throw new Error('Invalid search response: expected a results array');
+    }
+    const candidate = search.results?.find(item => item?.contentAccess?.fullContentAvailable);
     if (!candidate) return { status: 'no_public_match', query, search };
-    if (typeof candidate.id !== 'string' || !candidate.id.trim()) throw new Error('Search returned no usable memory ID.');
+    if (typeof candidate.id !== 'string' || candidate.id.trim().length === 0) {
+      throw new Error('Invalid search response: readable candidate must have a non-empty ID');
+    }
     const memory = readData(await connection.tools.remnant_inspect_memory.execute({
       memoryId: candidate.id,
       detail: 'evidence',
     }));
-    if (!memory || memory.id !== candidate.id) throw new Error('Inspection response does not match the selected memory ID.');
+    if (!memory || typeof memory !== 'object' || Array.isArray(memory) || memory.id !== candidate.id) {
+      throw new Error('Invalid inspection response: memory ID does not match the selected candidate');
+    }
     return {
       status: 'public_memory_read',
       elapsedMs: Math.round(performance.now() - started),
