@@ -48,7 +48,8 @@ test('common corpus and v2 subset retain explicit semantics without rewriting th
 
 // Current source reviews must never rewrite their historical evidence.
 test('current integration matrix retains the exact historical observation', () => {
-  const previous=readFileSync(new URL(manifest.priorManifest.path,root));
+  const previous=readFileSync(new URL(manifest.priorManifest.path,root),'utf8').replace(/\r\n/g,'\n');
+  assert.equal(manifest.priorManifest.hashNormalization,'UTF8_CRLF_TO_LF');
   assert.equal(createHash('sha256').update(previous).digest('hex'),manifest.priorManifest.sha256);
   assert.equal(JSON.parse(previous).manifestVersion,'remnant-adapter-compatibility-v1');
   assert.equal(manifest.manifestVersion,'remnant-adapter-compatibility-v2');

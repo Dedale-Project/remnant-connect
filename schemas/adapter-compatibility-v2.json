@@ -435,8 +435,9 @@
   "sourceHashNormalization": "SHA-256 of UTF-8 text with CRLF normalized to LF; no other content normalization",
   "priorManifest": {
     "path": "schemas/adapter-compatibility-v1.json",
-    "sha256": "7b695e357e8db5a81fe637aafff5adb1ec99584d58713ae28d073c837c7c3361",
-    "semantics": "Historical observation preserved byte-for-byte; source bindings belong to that observation."
+    "sha256": "fcfe15df7e6e632b03e1769c20c8957a444fead069034c74af1bda1816b139d8",
+    "semantics": "Historical Git blob is unchanged; checkout CRLF is normalized to LF for portable comparison.",
+    "hashNormalization": "UTF8_CRLF_TO_LF"
   },
   "integrationReview": {
     "publicBase": "26d752e6d6a3835702db23d9db4de1881230abb6",
