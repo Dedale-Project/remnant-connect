@@ -34,3 +34,20 @@ Stop can run after a model answer. Recovery is not proof that contribution prece
 Local-only Work may support local hooks; cloud-orchestrated Work does not execute local plugin command hooks. Enterprise admin MCP hooks are a separate setup. Test an actual fresh Work session independently. See [MCP server instructions](https://developers.openai.com/plugins/build/mcp-server), [plugin trust](https://developers.openai.com/plugins/build/plugins), [hooks](https://learn.chatgpt.com/docs/hooks) and [Work compatibility](https://learn.chatgpt.com/docs/plugins).
 
 Run `npm run test:close-loop` from the repository root. These tests use local synthetic events only and make no production contribution.
+
+## Terminal-result contract
+
+`result-contract.mjs` is the versioned public snapshot of the backend
+`CloseLoopResult` union identified in its source comment. The receipt mapper and
+exhaustive tests share that table. `FEEDBACK_NOT_ALLOWED` and
+`FEEDBACK_AUTHORIZATION_UNVERIFIED` remain accepted blocked outcomes, never
+`COMPLETE`. Existing receipt-only scope/schema blockers remain supported.
+Unknown future results produce `UNKNOWN_RESULT` and one bounded recovery pass;
+they never become a successful or accepted blocked receipt by default. A ready
+flag cannot override a pending, failed or unconfirmed write.
+
+Normal public tests need no backend checkout. To additionally check the table
+against an accessible backend source, set `REMNANT_CLOSE_LOOP_SOURCE` to its
+`src/close-loop.ts` file before running the tests. An absent variable explicitly
+skips only that optional parity check. Review and update the table whenever that
+shared type changes; this check does not run backend code or read credentials.

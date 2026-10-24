@@ -8,6 +8,10 @@ const text = name => bytes(name).toString('utf8');
 const json = name => JSON.parse(text(name));
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 const canonicalRead = 'https://remnant.dedale-bi.com/mcp/chatgpt';
+// A distinct opt-in candidate; installed/registry manifests remain on full v1 below.
+assert.equal(json('examples/read-v2/mcp.json').mcpServers['remnant-read-minimal-v2'].url, 'https://remnant.dedale-bi.com/mcp/read/v2');
+for (const phrase of ['UNKNOWN', 'Deploy and verify the backend', 'REMNANT_READ_PROFILE', 'full-v1'])
+  assert.ok(text('docs/READ_PROFILES.md').includes(phrase), `Missing explicit v2 boundary: ${phrase}`);
 
 const pkg = json('package.json');
 const lock = json('package-lock.json');

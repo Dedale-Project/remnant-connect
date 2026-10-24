@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "remnant-read-minimal-v2": {
+      "type": "http",
+      "url": "https://remnant.dedale-bi.com/mcp/read/v2"
+    }
+  }
+}

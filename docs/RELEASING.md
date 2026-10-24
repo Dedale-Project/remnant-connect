@@ -7,7 +7,7 @@ The public repository is the Apache-2.0 integration layer. Its releases do not l
 | Artifact | Authoritative version | Meaning |
 |---|---|---|
 | This integration package | `package.json` and root entries in `package-lock.json` (0.2.0) | Local stdio bridge, examples and repository distribution; Git tag `v0.2.0` |
-| Portable/Codex Read plugin | Both `plugins/remnant/plugin.json` and `.codex-plugin/plugin.json` (0.1.8) | Host-installable instructions, assets and remote connection; `remnant-plugin-0.1.8.zip` |
+| Portable/Codex Read plugin | Both `plugins/remnant/plugin.json` and `plugins/remnant/.codex-plugin/plugin.json` (0.1.8) | Host-installable instructions, assets and remote connection; `remnant-plugin-0.1.8.zip` |
 | Hosted Remnant service | Current live `initialize`/service metadata | Separately deployed private service; never bump its version to match this package |
 | MCP Registry publication | `docs/server.registry.json` (0.1.0-beta.9.1, with applicationVersion 0.1.0-beta.9) | Existing independently published registry manifest; not the integration or plugin version |
 | Glama release | Glama's release generated from a successfully built repository revision | Separate directory/runtime artifact; a GitHub release alone is not a Glama release |
@@ -21,6 +21,18 @@ The historical root package version 0.1.0-beta.3 belonged to the connection exam
 3. Install the pinned dependencies with `npm ci --ignore-scripts`. Run `npm run build:plugin`; it copies the root legal files into the plugin, builds a deterministic ZIP, writes its SHA-256 and refuses to overwrite different bytes under an existing version.
 4. Run `npm run validate:distribution`, `npm run validate:plugin`, `npm run test:bridge`, `npm run test:feedback`, and `npm run test:close-loop`. These tests use local fixtures/mocks and must not create production usage or feedback. Run applicable framework-specific tests when those examples change.
 5. Review the diff and archive contents. Verify no private backend code, credentials, databases, dependency directory or executable hook enters the portable plugin. Check that the root README points to the current archive and that the license boundary remains clear.
+6. At the reviewed commit, check the [canonical installation guide](DEVELOPER_QUICKSTART.md), SDK guide, package/lockfile and plugin manifests against this version table. Resolve local documentation links and check owned public guide/discovery URLs. Preserve dated compatibility observations and immutable release files; a historical test dependency is not the current package dependency.
+7. Check the linked directories and showcases using [the dated directory review](DIRECTORY_STATUS.md). Record the URL, observation time, source version and any mismatch; cached search excerpts are not fresh page evidence. Mark inaccessible pages or untested install paths UNKNOWN. Prepare a concrete correction draft for external gaps, and request separate authorization before contacting maintainers or changing an external listing. Directory publication is independent of releasing repository documentation.
+
+For adapter or Read contract changes, also run the commands in the
+[adapter compatibility matrix](ADAPTER_COMPATIBILITY.md), including both named
+SDK clients. Update source SHA-256 bindings, corpus identity, observed versions,
+evidence levels and the review date in `schemas/adapter-compatibility-v1.json`.
+A passing source-function or injected-connection fixture does not certify an
+installed framework. Keep unexecuted native hosts, model runs, latest versions and
+remote behavior explicitly UNKNOWN/NOT_RUN. Treat a dependency/contract change or
+an expired review date as requiring review, not as permission for an automatic
+upgrade. Preserve historical observations and immutable archives.
 
 ## Publish a real release
 

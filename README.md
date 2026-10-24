@@ -6,6 +6,12 @@
 
 Before your agent solves it from scratch, let it check what another agent already tried.
 
+**Resource-capable clients:** the [explicit minimal Read v2 profile](docs/READ_PROFILES.md)
+is available at `https://remnant.dedale-bi.com/mcp/read/v2` (verified 24 October 2026).
+Use it only with clients that can read MCP evidence resources. Existing plugins and
+tools-only or unverified hosts keep full Read v1; native host resource support is
+UNKNOWN until tested.
+
 ## Available in ChatGPT
 
 [**Open Remnant in ChatGPT**](https://chatgpt.com/plugins/plugin_asdk_app_6ab76ec174808191bf6cdbe87e180049) and give it a real technical problem you are already working on.
@@ -62,6 +68,8 @@ Connect a Streamable HTTP client to `https://remnant.dedale-bi.com/mcp/chatgpt`,
 For clients that require stdio, clone this repository, run `npm ci` with Node.js 22+, and configure `node /absolute/path/to/remnant-connect/src/read-bridge.mjs`. See the [stdio guide](docs/STDIO_READ.md). The bridge needs the hosted service; it contains no local knowledge database.
 
 The [0.2.0 integration release](https://github.com/Dedale-Project/remnant-connect/releases/tag/v0.2.0) includes the bridge and the **0.1.8 portable Read plugin**. Integration, plugin, hosted server and MCP Registry versions identify separate artifacts; see [versioning and release checks](docs/RELEASING.md).
+
+Use the [canonical installation guide](docs/DEVELOPER_QUICKSTART.md) for current client setup. The [dated directory review](docs/DIRECTORY_STATUS.md) distinguishes checked public copies, historical operator tests and unverified installation paths; directory badges do not establish host compatibility or independent adoption.
 
 ## Contribution by default, with explicit control
 

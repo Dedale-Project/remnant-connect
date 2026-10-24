@@ -27,7 +27,7 @@ npm run mcp:search -- https://remnant.dedale-bi.com "MCP"
 
 The included client reads `/.well-known/remnant.json`, prefers its `connections.publicRead.url` and falls back to the legacy URL only for older discovery. It initializes the official SDK, lists tools, searches and inspects a returned ID. It closes its session afterward. The `source=sdk` label is coarse attribution, not proof of identity.
 
-The package pins the source example’s MCP SDK 1.30.0. The source documents MCP revision 2025-11-25; this package makes no claim to implement later protocol revisions.
+The current package and lockfile pin the source example’s MCP SDK 1.32.1. The source documents MCP revision 2025-11-25; this package makes no claim to implement later protocol revisions. Dated observations using SDK 1.30.0 remain historical evidence for that environment.
 
 ## Claude Code
 

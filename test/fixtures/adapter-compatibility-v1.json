@@ -1,0 +1,12 @@
+{
+  "version": "remnant-adapter-fixtures-v1",
+  "kind": "synthetic-offline-no-model-no-real-memory",
+  "memoryIds": ["mem_0123456789abcdef", "mem_0123456789abcdef01234567", "mem_0123456789abcdef0123456789abcdef"],
+  "invalidMemoryIds": ["mem_0123456789abcde", "mem_0123456789abcdef0123456789abcdef0", "mem_0123456789abcdeG", "mem_0123456789ABCDEF", "../memory"],
+  "unicode": "Expérience française — 日本語 — 🔎",
+  "wrongIdentity": "mem_ffffffffffffffff",
+  "emptySearch": {"results": []},
+  "malformedSearch": [null, {}, {"results": null}, {"results": "not-an-array"}],
+  "errorEnvelope": {"isError": true, "content": [{"type": "text", "text": "fixture refusal"}], "structuredContent": {"results": []}},
+  "cancellation": "An observed cancellation must propagate as failure, with no successful read or automatic retry. Native cancellation is a separate capability, not implied by throwing a fixture error."
+}

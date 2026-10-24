@@ -2,9 +2,12 @@ import { createHash } from 'node:crypto';
 import { readFile, writeFile, mkdir, lstat } from 'node:fs/promises';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { CLOSE_LOOP_RESULT_CONTRACT, LEGACY_RECEIPT_BLOCKERS } from './result-contract.mjs';
 
 const root = dirname(fileURLToPath(import.meta.url));
-const reasonCodes = new Set(['PENDING', 'FAILED', 'COMPLETE', 'OPTED_OUT', 'REMNANT_DISABLED', 'NO_REUSABLE_LEARNING', 'DUPLICATE', 'UNSAFE', 'WRITE_UNAVAILABLE', 'CONSENT_REQUIRED', 'READ_UNAVAILABLE', 'PUBLIC_NOT_ALLOWED', 'FEEDBACK_SCOPE_MISSING', 'TOOL_SCHEMA_UNAVAILABLE']);
+const blockedReasons = new Set([...Object.keys(CLOSE_LOOP_RESULT_CONTRACT)
+  .filter(reason => CLOSE_LOOP_RESULT_CONTRACT[reason] === 'blocked'), ...LEGACY_RECEIPT_BLOCKERS]);
+const reasonCodes = new Set(['PENDING', 'FAILED', 'UNKNOWN_RESULT', 'COMPLETE', 'NO_REUSABLE_LEARNING', 'DUPLICATE', ...blockedReasons]);
 const pendingNames = new Set(['assess', 'search_duplicates', 'feedback', 'contribute', 'verify']);
 const key = (sessionId, turnId) => createHash('sha256').update(JSON.stringify([sessionId, turnId])).digest('hex');
 
@@ -21,16 +24,27 @@ export async function writeHostDecision({ stateDir, sessionId, turnId, decision 
 }
 
 /** Map the trusted completion wrapper's onDecision callback, not a model JSON blob. */
-export function fromCompletionDecision({ ready, state }) {
-  const pending = new Set(['PENDING', 'FAILED', 'UNCONFIRMED_WRITE']);
+export function fromCompletionDecision({ ready, state } = {}) {
+  const unknown = () => ({ ready: false, blocked: false, pendingActions: ['assess'], reasonCode: 'UNKNOWN_RESULT' });
+  const known = value => Object.hasOwn(CLOSE_LOOP_RESULT_CONTRACT, value) || LEGACY_RECEIPT_BLOCKERS.includes(value);
+  if (typeof ready !== 'boolean' || !state || !known(state.contributionResult)
+      || !state.feedbackResults || typeof state.feedbackResults !== 'object' || Array.isArray(state.feedbackResults)
+      || (state.blockedReason != null && !known(state.blockedReason))) return unknown();
+  const feedback = Object.values(state.feedbackResults);
+  if (feedback.some(value => value !== 'RECORDED' && !known(value))) return unknown();
+  const results = [state.blockedReason, ...feedback, state.contributionResult].filter(value => value != null);
+  const pending = value => CLOSE_LOOP_RESULT_CONTRACT[value] === 'pending';
   const pendingActions = [];
-  if (pending.has(state.contributionResult)) pendingActions.push(state.contributionResult === 'UNCONFIRMED_WRITE' ? 'verify' : 'contribute');
-  if (Object.values(state.feedbackResults).some(value => pending.has(value))) pendingActions.push('feedback');
-  if (!ready && !pendingActions.length) pendingActions.push('assess');
-  const result = state.blockedReason ?? state.contributionResult;
-  return { ready, blocked: ready && !['PUBLISHED', 'NO_REUSABLE_LEARNING', 'DUPLICATE'].includes(result),
-    pendingActions: ready ? [] : pendingActions,
-    reasonCode: ready ? (result === 'PUBLISHED' ? 'COMPLETE' : reasonCodes.has(result) ? result : 'COMPLETE') : result === 'FAILED' ? 'FAILED' : 'PENDING' };
+  if (pending(state.contributionResult)) pendingActions.push(state.contributionResult === 'UNCONFIRMED_WRITE' ? 'verify' : 'contribute');
+  if (feedback.some(pending)) pendingActions.push('feedback');
+  // An inconsistent ready flag must never hide an unconfirmed write or failed feedback.
+  if (results.some(pending)) return { ready: false, blocked: false,
+    pendingActions: pendingActions.length ? pendingActions : ['assess'], reasonCode: results.includes('FAILED') ? 'FAILED' : 'PENDING' };
+  const blocker = results.find(value => blockedReasons.has(value));
+  if (blocker) return { ready, blocked: true, pendingActions: [], reasonCode: blocker };
+  if (!ready) return { ready: false, blocked: false, pendingActions: ['assess'], reasonCode: 'PENDING' };
+  return { ready: true, blocked: false, pendingActions: [],
+    reasonCode: state.contributionResult === 'PUBLISHED' ? 'COMPLETE' : state.contributionResult };
 }
 
 function validDecision(d) {
@@ -38,8 +52,11 @@ function validDecision(d) {
     && reasonCodes.has(d.reasonCode) && Array.isArray(d.pendingActions)
     && d.pendingActions.every(x => pendingNames.has(x))
     && (!d.ready || d.pendingActions.length === 0)
-    && (!d.ready || !['PENDING', 'FAILED'].includes(d.reasonCode))
-    && (!d.blocked || (d.pendingActions.length === 0 && !['PENDING', 'FAILED', 'COMPLETE'].includes(d.reasonCode)));
+    && (blockedReasons.has(d.reasonCode)
+      ? d.blocked && d.pendingActions.length === 0
+      : ['PENDING', 'FAILED', 'UNKNOWN_RESULT'].includes(d.reasonCode)
+        ? !d.ready && !d.blocked && d.pendingActions.length > 0
+        : d.ready && !d.blocked && d.pendingActions.length === 0);
 }
 
 /** No network requests, no transcript parsing, and no write-side tools. */

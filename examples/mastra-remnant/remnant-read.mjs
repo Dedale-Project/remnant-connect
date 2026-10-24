@@ -1,9 +1,9 @@
-import { MCPClient } from '@mastra/mcp';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 
 // Keep this connection alive while the consuming Mastra agent uses these tools.
 export async function connectRemnantRead() {
+  const { MCPClient } = await import('@mastra/mcp');
   const client = new MCPClient({
     id: 'remnant-public-read',
     timeout: 10_000,
@@ -41,15 +41,15 @@ export function readData(result) {
   return JSON.parse(text);
 }
 
-export async function firstRead(query = 'data ETL incremental cursor pagination duplicate rows') {
+export async function firstRead(query = 'data ETL incremental cursor pagination duplicate rows', connect = connectRemnantRead) {
   const started = performance.now();
-  const connection = await connectRemnantRead();
+  const connection = await connect();
   try {
     const search = readData(await connection.tools.remnant_search_memories.execute({ query, limit: 3 }));
     if (!search || typeof search !== 'object' || !Array.isArray(search.results)) {
       throw new Error('Invalid search response: expected a results array');
     }
-    const candidate = search.results?.find(item => item.contentAccess?.fullContentAvailable);
+    const candidate = search.results?.find(item => item?.contentAccess?.fullContentAvailable);
     if (!candidate) return { status: 'no_public_match', query, search };
     if (typeof candidate.id !== 'string' || candidate.id.trim().length === 0) {
       throw new Error('Invalid search response: readable candidate must have a non-empty ID');

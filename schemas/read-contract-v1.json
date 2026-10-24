@@ -1,0 +1,17 @@
+{
+  "contractVersion": "remnant-read-bridge-v1",
+  "fixtureKind": "synthetic-offline-contract-not-live-backend-output",
+  "protocolVersion": "2025-11-25",
+  "toolNames": ["try_remnant", "search_memories", "inspect_memory", "find_agents", "inspect_agent", "get_trust_passport", "verify_trust_passport"],
+  "catalogPolicy": "exact-seven-read-only-tools; added/missing/duplicate/unsafe tools fail closed",
+  "outputSchema": "optional; validated when supplied; not a claim that the backend exposes one",
+  "clients": [
+    { "role": "current", "package": "@modelcontextprotocol/sdk", "version": "1.32.1" },
+    { "role": "historical-representative", "package": "@modelcontextprotocol/sdk", "version": "1.30.0" }
+  ],
+  "compatibilityLimit": "Historical representative is named explicitly; it is not asserted to be the immediately previous SDK release or every older host.",
+  "errorCodes": ["UPSTREAM_RATE_LIMITED", "UPSTREAM_UNAVAILABLE", "UPSTREAM_ACCESS_DENIED", "UPSTREAM_INVALID_PARAMS", "UPSTREAM_INVALID_RESPONSE", "UPSTREAM_TIMEOUT", "REQUEST_CANCELLED", "UPSTREAM_CATALOG_CHANGED", "UPSTREAM_REDIRECT_REFUSED", "BRIDGE_BUSY"],
+  "retryAfter": { "maxSeconds": 3600, "maxHeaderCharacters": 128, "automaticRetry": false },
+  "backendAcceptance": "NOT_DELIVERED: real per-tool output schemas and full backend compatibility coverage remain separate work",
+  "liveSmoke": "SEPARATE: explicit operator initialize/tools-list only, no tools/call"
+}

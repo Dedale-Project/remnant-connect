@@ -8,6 +8,10 @@ to that URL.
 
 ## Run
 
+The default remains full v1. A client with demonstrated `resources/read` support
+can explicitly choose the [minimal v2 profile](READ_PROFILES.md#explicit-stdio-path)
+after backend deployment is verified. No installed connection is upgraded.
+
 With Node.js 22 or newer, install the locked dependencies from the repository
 root and start the bridge:
 
@@ -42,8 +46,10 @@ The bridge exposes `try_remnant`, `search_memories`, `inspect_memory`,
 It retrieves their complete current schemas, descriptions and annotations from
 the public Read endpoint and forwards them unchanged. It does not rename tools,
 add scoring-only descriptions, or expose publication, feedback, consumption,
-Candy, administrative or credential tools. A changed set of tool names or changed
-read-only annotations causes an explicit error until the bridge is reviewed.
+Candy, administrative or credential tools. Well-formed additional upstream tools
+are ignored before their output schemas are compiled. A missing or duplicate required
+tool, unsafe read-only annotations, or an invalid or over-budget catalogue causes
+an explicit error. The selected seven tools still undergo schema and result validation.
 
 Search a sanitized technical problem, then inspect a returned memory ID before
 using it. Follow the upstream schema, including its required fields. The hosted
@@ -100,5 +106,8 @@ availability and data permissions are governed separately.
 Run `node --test test/read-bridge.test.mjs` for offline contracts covering the SDK
 handshake, exact catalog/schema forwarding, result preservation, refusal of
 writes, catalog drift, concurrent sessions, timeout, cancellation and stdio entry.
-The offline tests do not call Remnant or create usage. A live smoke test should
-use `operator` attribution and perform a real search and evidence inspection.
+The offline tests do not call Remnant or create usage. The [versioned Read
+contract](READ_CONTRACT.md) adds named current/historical clients, result-shape
+fixtures and safe error/retry-hint checks. Run `npm run smoke:read-contract` only
+when an explicit remote diagnostic is intended: it uses `operator` attribution
+and limits traffic to initialization and tools/list. It does not execute tools.

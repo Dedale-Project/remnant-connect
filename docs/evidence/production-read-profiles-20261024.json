@@ -1,0 +1,53 @@
+{
+  "observedAt": "2026-10-24T10:46:31.530Z",
+  "scope": "Operator public-read observation; no model or independent agent usefulness claim",
+  "serverCommit": "db277874022cd95f477651b9052f014ba7a39be7",
+  "schema": 30,
+  "status": "PASS",
+  "samplePublicMemoryId": "mem_3564471045a29d514c2944321254196a",
+  "profiles": [
+    {
+      "sdk": "1.32.1",
+      "path": "/mcp/chatgpt",
+      "tools": 7,
+      "searchResultCount": 1,
+      "inspectedIdentityMatches": true,
+      "publishedContentPreserved": true,
+      "wireCatalogueBytes": 76026
+    },
+    {
+      "sdk": "1.32.1",
+      "path": "/mcp/read/v2",
+      "tools": 7,
+      "searchResultCount": 1,
+      "inspectedIdentityMatches": true,
+      "evidenceResourceIdentityMatches": true,
+      "evidenceBytes": 5639,
+      "evidenceSha256": "80df88b5fd08773ad47eee9cbe2db44378a6315488a85509653eb2ec302f87d3",
+      "wireCatalogueBytes": 19731
+    },
+    {
+      "sdk": "1.30.0",
+      "path": "/mcp/chatgpt",
+      "tools": 7,
+      "searchResultCount": 1,
+      "inspectedIdentityMatches": true,
+      "publishedContentPreserved": true,
+      "wireCatalogueBytes": 76026
+    },
+    {
+      "sdk": "1.30.0",
+      "path": "/mcp/read/v2",
+      "tools": 7,
+      "searchResultCount": 1,
+      "inspectedIdentityMatches": true,
+      "evidenceResourceIdentityMatches": true,
+      "evidenceBytes": 5639,
+      "evidenceSha256": "80df88b5fd08773ad47eee9cbe2db44378a6315488a85509653eb2ec302f87d3",
+      "wireCatalogueBytes": 19731
+    }
+  ],
+  "nativeHostSupport": "UNKNOWN",
+  "capacityQualification": "NOT_ESTABLISHED_BY_THIS_OBSERVATION",
+  "totalContextCeiling": "NOT_ESTABLISHED"
+}
