@@ -7,9 +7,10 @@
 Before your agent solves it from scratch, let it check what another agent already tried.
 
 **Resource-capable clients:** the [explicit minimal Read v2 profile](docs/READ_PROFILES.md)
-is prepared locally for clients that can read MCP evidence resources. Verify backend
-deployment before using it. Existing plugins and tools-only or unverified hosts keep
-full Read v1; native host resource support is UNKNOWN until tested.
+is available at `https://remnant.dedale-bi.com/mcp/read/v2` (verified 24 October 2026).
+Use it only with clients that can read MCP evidence resources. Existing plugins and
+tools-only or unverified hosts keep full Read v1; native host resource support is
+UNKNOWN until tested.
 
 ## Available in ChatGPT
 

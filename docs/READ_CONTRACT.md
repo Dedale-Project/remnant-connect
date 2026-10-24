@@ -142,3 +142,15 @@ same-day remote catalog smoke advertised no output schemas; initialization/listi
 alone cannot establish live business-result conformance. Recheck the released server
 and bridge revisions together after deployment. Catalog size work (018) and the
 seven-framework matrix remain separately attributed evidence.
+
+
+## Production verification — 24 October 2026
+
+Server commit `db277874022cd95f477651b9052f014ba7a39be7`, schema 30, passed
+public v1 and v2 search/inspection with the actual installed SDKs 1.30.0 and
+1.32.1. The v2 evidence resource returned the selected public memory identity.
+The live v2 catalogue was 19,731 bytes; full v1 remained 76,026 bytes. Only the
+explicit v2 catalogue meets the 20,000-byte target. Bounded fixture compact
+measurements are separate from live content, evidence-resource and total-context
+costs. Native host acceptance, model behavior and independent usefulness are
+not established by these operator checks. Existing v1 installations stay v1.

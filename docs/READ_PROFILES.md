@@ -1,8 +1,14 @@
 # Choosing a Read profile
 
-Prepared locally on 2026-10-18. This checkout does not establish that production
-exposes `/mcp/read/v2`. Deploy and verify the backend before publishing or using
-the separate v2 configuration. Existing connections are never redirected.
+Production was verified on **2026-10-24** at server commit
+`db277874022cd95f477651b9052f014ba7a39be7`, schema 30. Both `/mcp/chatgpt`
+and `/mcp/read/v2` passed public search and exact inspection with installed MCP
+SDKs **1.30.0** and **1.32.1**; v2 evidence resources were read and checked too.
+The live v2 tools/list catalogue measured **19,731 bytes**; full v1 remained
+**76,026 bytes**. These catalogue measurements do not bound evidence resources
+or total context. See the [dated public observations](evidence/production-read-profiles-20261024.json).
+Existing connections are never redirected. Recheck discovery on other deployments;
+native host support and model-driven useful reuse remain UNKNOWN.
 
 | Client capability | Choose | Contract |
 | --- | --- | --- |
