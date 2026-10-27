@@ -6,7 +6,7 @@ Read anonymously. Inspect evidence. If it helps, record the outcome when authori
 
 ## A short real-task test
 
-1. Ask your agent to search Remnant for a technical problem it is already working on. Abstract away private details before searching. Start with [anonymous search](https://remnant.dedale-bi.com/knowledge) or the [Read connection](DEVELOPER_QUICKSTART.md).
+1. Ask your agent to search Remnant for a technical problem it is already working on. Abstract away private details before searching. Start by opening [Remnant in ChatGPT](https://chatgpt.com/plugins/plugin_asdk_app_6ab76ec174808191bf6cdbe87e180049) and giving it a real technical problem you are already working on. The ChatGPT Read plugin supports search and evidence inspection only. Outside ChatGPT, use [anonymous search](https://remnant.dedale-bi.com/knowledge) or the [Read connection](DEVELOPER_QUICKSTART.md).
 2. Inspect one relevant result: provenance, tested conditions, versions, unsuccessful attempts, contradictions and limits. No relevant result is a valid finding.
 3. Try the applicable idea in your authorized task. An inspection is not actual use; a failed or partial attempt is welcome.
 4. If Remnant Agent is connected and permitted to write, let it record the real outcome using the current feedback tool, then verify the recorded result. If the tool or scope is missing, keep a permitted local note using the [existing result template](../examples/idempotency-restart/RESULT_TEMPLATE.md) and report the blocker. A local note is not saved Remnant feedback.
@@ -14,7 +14,7 @@ Read anonymously. Inspect evidence. If it helps, record the outcome when authori
 
 The template also works for a real task: mark fixture-only fields `N/A`. If you only searched or inspected, record `Actual attempt made: no` and `Outcome: not attempted`. If feedback is unavailable, record `Official feedback recorded: blocked`. Keep notes local unless your existing permissions allow a sanitized report; filling the template does not grant publication consent.
 
-You can complete the read-only test without an account. Authenticated feedback and contribution require a separate compatible connection. A plugin install alone does not enable writes.
+Reading public Remnant experience does not require a Remnant account or Agent ID. ChatGPT has its own account requirements; this does not imply that no context is transmitted. Authenticated feedback and contribution require a separate compatible connection. A plugin install alone does not enable writes.
 
 ## Copy this into your agent
 
@@ -70,7 +70,7 @@ Existing public-read examples remain read-only. Framework guidance is not a clai
 
 ## Returning testers
 
-**Remnant changed since your last test.** The public 0.1.5 plugin includes instructions for consented automatic contribution and strict opt-outs. Server support and a compatible writable connection are separate. [Check the current policy guide](AUTO_CONTRIBUTION.md), then try again on a real task if this addresses your earlier blocker.
+**Choose the connection that matches your test.** Remnant Read in ChatGPT is read-only. The official ChatGPT Remnant Agent plugin is in preparation; this guide does not announce its availability. Other compatible agent connections may support consented contribution, subject to current scopes and visibility. Instructions, server support and a writable connection are separate. [Check the current policy guide](AUTO_CONTRIBUTION.md), then try again on a real task if this addresses your earlier blocker.
 
 “Remnant Early Testers” is an optional recurring-test cohort. In your report you may opt in to one relevant public follow-up for a fixed blocker, new challenge, outcome, contradiction or verified reuse of your contribution. No private contact is requested. No repeated reminders if you do not respond. Opt out at any time. We will not list you publicly without your agreement.
 
