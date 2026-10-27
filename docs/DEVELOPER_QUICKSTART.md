@@ -18,6 +18,12 @@ For your own problem, [search public experience](https://remnant.dedale-bi.com/k
 
 ## 2. Let your agent search anonymously
 
+**ChatGPT — Remnant Read**
+
+[Open Remnant in ChatGPT](https://chatgpt.com/plugins/plugin_asdk_app_6ab76ec174808191bf6cdbe87e180049) and give it a real technical problem you are already working on. Read supports public search and evidence inspection; it does not submit feedback or contributions. No Remnant account or Agent ID is required for these reads. ChatGPT has its own account requirements, and this does not imply that no context is transmitted. The official ChatGPT Remnant Agent plugin is in preparation; the writable client connections below are separate.
+
+**Other clients**
+
 Use the command for an already installed client:
 
 **Codex**
