@@ -9,14 +9,19 @@ function fixture(overrides = {}) {
   const state = { policy:{ contribute:'ask', feedback:'auto', allowPublic:false },
     assessment:{ observed:true, reusable:true, safe:true, sourceClass:'debugging', lesson },
     duplicates:{ unfilteredSearch:true, inspectedCandidates:true, equivalent:false },
-    auth:false, writes:[], events:[], pending:[], ...overrides };
+    auth:false, agentId:'agt_fixture', writes:[], events:[], pending:[], saves:[], order:[], ...overrides };
   const loop = createContributionLoop({
     assess:async()=>state.assessment, policy:async()=>state.policy, duplicates:async()=>state.duplicates,
-    persist:async p=>state.pending.push(JSON.parse(JSON.stringify(p))),
-    connect:async()=>{state.auth=true;}, identity:async()=>({authenticated:state.auth,id:'agt_fixture',scopes:['memory:write','memory:feedback']}),
+    persist:async p=>{
+      state.saves.push(JSON.parse(JSON.stringify(p)));
+      if (state.failPersist?.(p)) throw Error('PERSIST_FAILED');
+      state.pending.push(JSON.parse(JSON.stringify(p)));
+      state.order.push(p.attempted ? 'attempt-saved' : 'approval-saved');
+    },
+    connect:async()=>{state.auth=true;}, identity:async()=>({authenticated:state.auth,id:state.agentId,scopes:['memory:write','memory:feedback']}),
     schemaSupports:async()=>true,
-    publish:async p=>{state.writes.push(p);if(state.loseReply){state.loseReply=false;throw Error('timeout');}return {id:'mem_fixture'};},
-    feedback:async p=>{state.writes.push(p);return {id:'mem_existing'};},
+    publish:async p=>{state.order.push('write');state.writes.push(p);if(state.loseReply){state.loseReply=false;throw Error('timeout');}return {id:'mem_fixture'};},
+    feedback:async p=>{state.order.push('write');state.writes.push(p);return {id:'mem_existing'};},
     readback:async (_p, a)=>({verified:!state.unconfirmed,id:a.id}), emit:e=>state.events.push(e),
   });
   return {state,loop};
@@ -111,3 +116,101 @@ test('feedback opt-out blocks an actual-use offer and a pending submission',asyn
   assert.equal((await f.loop.resume()).status,'OPTED_OUT');
   assert.equal(f.state.writes.length,0);
 });
+
+
+// Persistence is simulated: these checks exercise the real adapter, not a host,
+// filesystem failure, OAuth provider or live Remnant service.
+for (const kind of ['memory', 'feedback']) {
+  async function prepared(f) {
+    if (kind === 'feedback') f.state.assessment.actualUse = {
+      memoryId:'mem_existing', searched:true, inspected:true, attempted:true,
+      outcome:'partial', reason:'The local retry experiment produced the recorded outcome.',
+      evidenceAudience:'private',
+    };
+    const p = await f.loop.preview();
+    return { payload:p.lesson, actualUse:p.actualUse, kind:p.kind,
+      visibility:'private', idempotencyKey:'persistence-fixture' };
+  }
+  const done = kind === 'memory' ? 'PUBLISHED' : 'FEEDBACK_RECORDED';
+  for (const stage of ['approval', 'attempt']) {
+    const fails = p => stage === 'approval' || p.attempted === true;
+    test(`${kind}: repeated ${stage} persistence failure never writes`, async () => {
+      const f = fixture({failPersist:fails});
+      const approval = await prepared(f);
+      if (stage === 'approval') await assert.rejects(f.loop.approve(approval), /PERSIST_FAILED/);
+      else await f.loop.approve(approval);
+      for (let i = 0; i < 2; i++) {
+        await assert.rejects(f.loop.resume(), /PERSIST_FAILED/);
+        assert.equal(f.state.writes.length, 0);
+      }
+      assert.equal(f.state.saves.length, 3);
+      assert.equal(f.state.pending.length, stage === 'approval' ? 0 : 1);
+      if (stage === 'approval') {
+        assert.equal(f.state.auth, false);
+        assert.ok(!f.state.events.some(e => e.event === 'contribution_accepted'));
+      }
+    });
+    test(`${kind}: recovery after ${stage} persistence failure retains exact approval`, async () => {
+      const f = fixture({failPersist:fails});
+      const approval = await prepared(f);
+      if (stage === 'approval') await assert.rejects(f.loop.approve(approval), /PERSIST_FAILED/);
+      else {
+        await f.loop.approve(approval);
+        await assert.rejects(f.loop.resume(), /PERSIST_FAILED/);
+      }
+      assert.equal(f.state.writes.length, 0);
+      assert.equal((await f.loop.approve({...approval,idempotencyKey:'replacement-key'})).status, 'ALREADY_HANDLED');
+      f.state.failPersist = undefined;
+      assert.equal((await f.loop.resume()).status, done);
+      assert.deepEqual(f.state.order, ['approval-saved', 'attempt-saved', 'write']);
+      const request = f.state.writes[0];
+      assert.deepEqual(request.lesson, approval.payload);
+      assert.deepEqual(request.actualUse, approval.actualUse);
+      assert.equal(request.kind, kind);
+      assert.equal(request.visibility, approval.visibility);
+      assert.equal(request.idempotencyKey, approval.idempotencyKey);
+      assert.equal(request.agentId, 'agt_fixture');
+      assert.equal(request.attempted, true);
+      assert.deepEqual(f.state.saves[stage === 'approval' ? 0 : 1], f.state.saves[stage === 'approval' ? 1 : 2]);
+      assert.equal((await f.loop.resume()).status, done);
+      assert.equal(f.state.writes.length, 1);
+      assert.equal(f.state.events.filter(e => e.event === 'contribution_accepted').length, 1);
+    });
+    test(`${kind}: policy refusal after ${stage} failure blocks recovery`, async () => {
+      const f = fixture({failPersist:fails});
+      const approval = await prepared(f);
+      if (stage === 'approval') await assert.rejects(f.loop.approve(approval), /PERSIST_FAILED/);
+      else {
+        await f.loop.approve(approval);
+        await assert.rejects(f.loop.resume(), /PERSIST_FAILED/);
+      }
+      f.state.failPersist = undefined;
+      f.state.policy.noExternalWrite = true;
+      const saves = f.state.saves.length;
+      assert.equal((await f.loop.resume()).status, 'OPTED_OUT');
+      assert.equal(f.state.saves.length, saves);
+      assert.equal(f.state.writes.length, 0);
+    });
+  }
+  test(`${kind}: normal path confirms both saves before one write`, async () => {
+    const f = fixture();
+    await f.loop.approve(await prepared(f));
+    assert.equal((await f.loop.resume()).status, done);
+    assert.equal((await f.loop.resume()).status, done);
+    assert.deepEqual(f.state.order, ['approval-saved', 'attempt-saved', 'write']);
+  });
+  test(`${kind}: failed attempt save keeps identity binding and rechecks candidate`, async () => {
+    const f = fixture({failPersist:p => p.attempted === true});
+    await f.loop.approve(await prepared(f));
+    await assert.rejects(f.loop.resume(), /PERSIST_FAILED/);
+    f.state.failPersist = undefined;
+    f.state.agentId = 'agt_other';
+    assert.equal((await f.loop.resume()).status, 'IDENTITY_CHANGED');
+    f.state.agentId = 'agt_fixture';
+    f.state.assessment = {...f.state.assessment, lesson:{...lesson, resolution:'A different resolution.'}};
+    assert.equal((await f.loop.resume()).status, 'PREVIEW_CHANGED');
+    f.state.assessment = {...f.state.assessment, lesson};
+    assert.equal((await f.loop.resume()).status, done);
+    assert.equal(f.state.writes.length, 1);
+  });
+}
