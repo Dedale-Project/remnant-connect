@@ -36,9 +36,16 @@ export function distilled(value) {
  * assessment, duplicate search/inspection, secure persistence and OAuth. */
 export function createContributionLoop({ assess, policy, duplicates, persist, connect,
   identity, schemaSupports, publish, feedback, readback, emit = () => {} }) {
-  let offered = false, declined = false, pending, complete;
+  let offered = false, declined = false, pending, complete, approvalPersisted = false;
   const event = name => { try { emit(Object.freeze({ event: name })); } catch { /* telemetry cannot fail work */ } };
   const blocked = p => p.noUse || p.noExternalWrite || p.optOut || p.contribute === 'off';
+  async function persistApproval() {
+    // Keep the approved request for retries, but never treat a rejected save as
+    // durable. Give the host a snapshot so it cannot mutate the pending action.
+    await persist(JSON.parse(JSON.stringify(pending)));
+    approvalPersisted = true;
+    event('contribution_accepted');
+  }
   async function candidate() {
     const p = await policy();
     if (blocked(p) || declined) return { status: 'OPTED_OUT' };
@@ -101,8 +108,7 @@ export function createContributionLoop({ assess, policy, duplicates, persist, co
     const request = { kind: c.kind, lesson: c.lesson, visibility, idempotencyKey,
       ...(c.actualUse ? { actualUse: c.actualUse } : {}) };
     pending = JSON.parse(JSON.stringify(request));
-    await persist(pending); // Host private storage; before OAuth or any mutation.
-    event('contribution_accepted');
+    await persistApproval(); // Host private storage; before OAuth or any mutation.
     return { status: 'APPROVED' };
   }
   async function resume() {
@@ -112,6 +118,7 @@ export function createContributionLoop({ assess, policy, duplicates, persist, co
     if (blocked(p) || declined || (pending.kind === 'feedback' && (p.feedbackOptOut || p.feedback === 'off')))
       return { status: 'OPTED_OUT' };
     if (pending.visibility === 'public' && p.allowPublic !== true) return { status: 'VISIBILITY_REQUIRED' };
+    if (!approvalPersisted) await persistApproval();
     let who = await identity();
     if (!who.authenticated) { await connect(); who = await identity(); }
     if (!who.authenticated) return { status: 'AUTH_REQUIRED' };
@@ -126,8 +133,12 @@ export function createContributionLoop({ assess, policy, duplicates, persist, co
           || JSON.stringify(c.actualUse) !== JSON.stringify(pending.actualUse))
         return { status: 'PREVIEW_CHANGED' };
       pending.agentId = who.id;
-      pending.attempted = true;
-      await persist(pending);
+      // Retain the identity binding even on failure, but commit the attempted
+      // transition only after the host confirms persistence. A retry must still
+      // recheck the candidate and save this same request before any remote write.
+      const attempted = { ...pending, attempted: true };
+      await persist(JSON.parse(JSON.stringify(attempted)));
+      pending = attempted;
     }
     // Retain exact request on an ambiguous result. No new key, task rerun or duplicate bypass.
     const request = JSON.parse(JSON.stringify(pending));
