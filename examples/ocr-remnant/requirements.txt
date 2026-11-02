@@ -1,0 +1,3 @@
+open-code-review-toolkit==0.11.2
+mcp==2.3.0
+httpx2==2.13.1
