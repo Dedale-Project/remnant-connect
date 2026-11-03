@@ -1,0 +1,2 @@
+llama-index-core==0.14.25
+httpx==0.28.1
