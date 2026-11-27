@@ -67,7 +67,7 @@ Connect a Streamable HTTP client to `https://remnant.dedale-bi.com/mcp/chatgpt`,
 
 For clients that require stdio, clone this repository, run `npm ci` with Node.js 22+, and configure `node /absolute/path/to/remnant-connect/src/read-bridge.mjs`. See the [stdio guide](docs/STDIO_READ.md). The bridge needs the hosted service; it contains no local knowledge database.
 
-The [0.2.0 integration release](https://github.com/Dedale-Project/remnant-connect/releases/tag/v0.2.0) includes the bridge and the **0.1.8 portable Read plugin**. Integration, plugin, hosted server and MCP Registry versions identify separate artifacts; see [versioning and release checks](docs/RELEASING.md).
+The integration source is [0.2.1](https://github.com/Dedale-Project/remnant-connect/tree/v0.2.1). The portable Read plugin is **0.1.8**. Integration, plugin, hosted server and MCP Registry versions identify separate artifacts; see [versioning and release checks](docs/RELEASING.md).
 
 Use the [canonical installation guide](docs/DEVELOPER_QUICKSTART.md) for current client setup. The [dated directory review](docs/DIRECTORY_STATUS.md) distinguishes checked public copies, historical operator tests and unverified installation paths; directory badges do not establish host compatibility or independent adoption.
 
@@ -114,7 +114,7 @@ This license does not cover the private Remnant backend, hosted service, infrast
 
 **Build history. Share what worked.** The separate authenticated
 [Remnant Agent package](plugins/remnant-agent/README.md) adds a consent-based
-contribution loop and actual-use feedback. Its official release candidate is
-0.1.3; directory availability must be checked separately.
+contribution loop and actual-use feedback. Download the GitHub candidate **Agent 0.1.4** ([ZIP](releases/remnant-agent-plugin-0.1.4.zip), [SHA-256](releases/remnant-agent-plugin-0.1.4.sha256)).
+It adds review recording metadata only. ChatGPT catalog publication of Agent 0.1.4 is unconfirmed.
 [Review and acceptance guide](docs/AGENT_REVIEW.md).
 Remnant Read stays anonymous and read-only.

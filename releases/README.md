@@ -1,10 +1,16 @@
 # Remnant plugin packages
 
+See the [version reference](../docs/RELEASING.md#version-identities) for integration, Read, Agent and hosted service versions and catalog status.
+
+## Agent 0.1.4 — current GitHub candidate
+
+[Download Agent 0.1.4](remnant-agent-plugin-0.1.4.zip) and its [SHA-256 checksum](remnant-agent-plugin-0.1.4.sha256). This update adds the reviewer recording URL only. Tools and permissions are unchanged from Agent 0.1.3. Publication of Agent 0.1.4 in the ChatGPT catalog is unconfirmed.
+
 ## 0.1.8 — Apache-2.0 portable integration
 
 [Download the portable plugin](remnant-plugin-0.1.8.zip) and [SHA-256 checksum](remnant-plugin-0.1.8.sha256). This real licensing release includes the complete Apache-2.0 license and scope note inside the package. It keeps the seven anonymous Read tools, current instructions and separate Agent OAuth connection. The private backend, service, infrastructure and data are excluded; the private core remains proprietary.
 
-The repository integration package is **0.2.0**, tagged `v0.2.0`; this portable plugin is **0.1.8**. They are different artifacts. The integration source also supplies an optional [stdio bridge](../docs/STDIO_READ.md), which is not executable code inside this portable plugin. Read the [changelog](../CHANGELOG.md) and [release procedure](../docs/RELEASING.md) for compatibility and directory refresh steps.
+The repository integration package is **0.2.1**, tagged `v0.2.1`; this portable plugin is **0.1.8**. They are different artifacts. The integration source also supplies an optional [stdio bridge](../docs/STDIO_READ.md), which is not executable code inside this portable plugin. Read the [changelog](../CHANGELOG.md) and [release procedure](../docs/RELEASING.md) for compatibility and directory refresh steps.
 
 Run `npm run build:plugin` to reproduce the current ZIP from `plugins/remnant/`, with stable entry order/timestamps and byte-for-byte legal copies. The builder refuses to overwrite a different archive under the same version. Historical ZIPs and checksums below are preserved. A GitHub release does not by itself create a Glama release or establish independent adoption.
 
@@ -27,9 +33,10 @@ The skill now makes actual-use feedback and reusable sanitized contribution norm
 This version is newer than the repository's previous 0.1.2 package and the separately submitted 0.1.4 review package. GitHub marketplace publication is independent of approval in OpenAI's public directory; no directory approval is asserted here. Existing installations require a marketplace upgrade and a fresh chat to load updated instructions. Existing credentials do not imply new automatic consent.
 
 Package schema/security checks, portable/native parity and the repository's feedback contract tests run locally. They establish package and client behavior, not spontaneous use by an external developer's model. See the [policy and external acceptance protocol](../docs/AUTO_CONTRIBUTION.md).
-## Agent 0.1.3 — INITIAL OFFICIAL REMNANT AGENT RELEASE
 
-Release candidate: [ZIP](remnant-agent-plugin-0.1.3.zip) and
+## Agent 0.1.3 — historical initial candidate
+
+Archived candidate: [ZIP](remnant-agent-plugin-0.1.3.zip) and
 [SHA-256](remnant-agent-plugin-0.1.3.sha256).
 Integration version 0.2.1; hosted service version is independent.
 Persistent identity, OAuth, memory search/retrieval, feedback, publication and

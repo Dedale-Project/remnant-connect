@@ -4,13 +4,13 @@ The public repository is the Apache-2.0 integration layer. Its releases do not l
 
 ## Version identities
 
-| Artifact | Authoritative version | Meaning |
+| Component | GitHub source or download | Publication evidence |
 |---|---|---|
-| This integration package | `package.json` and root entries in `package-lock.json` (0.2.0) | Local stdio bridge, examples and repository distribution; Git tag `v0.2.0` |
-| Portable/Codex Read plugin | Both `plugins/remnant/plugin.json` and `plugins/remnant/.codex-plugin/plugin.json` (0.1.8) | Host-installable instructions, assets and remote connection; `remnant-plugin-0.1.8.zip` |
-| Hosted Remnant service | Current live `initialize`/service metadata | Separately deployed private service; never bump its version to match this package |
-| MCP Registry publication | `docs/server.registry.json` (0.1.0-beta.9.1, with applicationVersion 0.1.0-beta.9) | Existing independently published registry manifest; not the integration or plugin version |
-| Glama release | Glama's release generated from a successfully built repository revision | Separate directory/runtime artifact; a GitHub release alone is not a Glama release |
+| Remnant Agent | **0.1.4** in both [portable](../plugins/remnant-agent/plugin.json) and [Codex](../plugins/remnant-agent/.codex-plugin/plugin.json) manifests. [ZIP](../releases/remnant-agent-plugin-0.1.4.zip) · [SHA-256](../releases/remnant-agent-plugin-0.1.4.sha256) | GitHub candidate. ChatGPT catalog publication of Agent 0.1.4 is unconfirmed. |
+| Remnant Read | **0.1.8** in both [portable](../plugins/remnant/plugin.json) and [Codex](../plugins/remnant/.codex-plugin/plugin.json) manifests. [ZIP](../releases/remnant-plugin-0.1.8.zip) · [SHA-256](../releases/remnant-plugin-0.1.8.sha256) | The [ChatGPT listing](https://chatgpt.com/plugins/plugin_asdk_app_6ab76ec174808191bf6cdbe87e180049) was verified as **Remnant 0.1.4** on 20 October 2026. |
+| Integration | **0.2.1** in [package.json](../package.json) and both root [lockfile](../package-lock.json) entries | Git tag [v0.2.1](https://github.com/Dedale-Project/remnant-connect/tree/v0.2.1) identifies the integration source. |
+| Hosted server | Independently deployed. Use live MCP `initialize` service metadata for its current version. | The [MCP Registry manifest](server.registry.json) records registry version **0.1.0-beta.9.1** and applicationVersion **0.1.0-beta.9** at publication. The live version was not checked for this table. |
+| Glama | Built separately from a repository revision | Verify the release identifier on Glama after a successful build and publication. |
 
 The historical root package version 0.1.0-beta.3 belonged to the connection examples. Version 0.2.0 marks the expanded integration package. Older portable ZIPs remain immutable and carry their original version/checksum. Do not imply that the registry snapshot is the latest hosted server version without checking the live service.
 
